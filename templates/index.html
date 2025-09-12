@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Armor Finder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header class="page-header">
+    <h1 id="appTitle">Armor Finder</h1>
+  </header>
+
+  <main class="container">
+    <!-- File Box -->
+    <section class="section file-section">
+      <h2 class="visually-hidden">Upload</h2>
+      <div id="fileDrop" class="file-drop" tabindex="0" role="button" aria-label="Upload destiny-armor.csv by dragging or clicking">
+        <div class="file-instructions">
+          <p class="file-title" id="fileBoxTitle">Drop your destiny-armor.csv here</p>
+          <p class="file-sub" id="fileBoxSub">or click to choose a file (max 500KB)</p>
+          <p class="file-note" id="fileBoxNote">Only a file named <strong>destiny-armor.csv</strong> is allowed.</p>
+        </div>
+        <input id="fileInput" type="file" accept=".csv" aria-hidden="true" />
+      </div>
+      <div id="fileStatus" class="file-status" aria-live="polite"></div>
+    </section>
+
+    <!-- USER SELECTION (three columns on desktop) -->
+    <section class="section user-selection">
+      <div class="selections-grid">
+        <!-- Column: Class -->
+        <div class="sel-col">
+          <div class="bar" id="classBar">Class</div>
+          <div class="group">
+            <div class="grid grid-1">
+              <button class="toggle-card" data-group="class" data-value="Titan">
+                <span class="check"></span><span class="label">Titan</span>
+              </button>
+              <button class="toggle-card" data-group="class" data-value="Warlock">
+                <span class="check"></span><span class="label">Warlock</span>
+              </button>
+              <button class="toggle-card" data-group="class" data-value="Hunter">
+                <span class="check"></span><span class="label">Hunter</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column: Archetype -->
+        <div class="sel-col">
+          <div class="bar" id="archetypeBar">Archetype</div>
+          <div class="group">
+            <div class="grid grid-2">
+              <button class="toggle-card" data-group="archetype" data-value="Brawler">
+                <span class="check"></span><span class="label">Brawler</span>
+              </button>
+              <button class="toggle-card" data-group="archetype" data-value="Bulwark">
+                <span class="check"></span><span class="label">Bulwark</span>
+              </button>
+              <button class="toggle-card" data-group="archetype" data-value="Gunner">
+                <span class="check"></span><span class="label">Gunner</span>
+              </button>
+              <button class="toggle-card" data-group="archetype" data-value="Grenadier">
+                <span class="check"></span><span class="label">Grenadier</span>
+              </button>
+              <button class="toggle-card" data-group="archetype" data-value="Paragon">
+                <span class="check"></span><span class="label">Paragon</span>
+              </button>
+              <button class="toggle-card" data-group="archetype" data-value="Specialist">
+                <span class="check"></span><span class="label">Specialist</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column: Set -->
+        <div class="sel-col">
+          <div class="bar" id="setBar">Set</div>
+          <div class="group">
+            <div class="grid grid-3">
+              <!-- 12 set boxes -->
+              
+              <button class="toggle-card" data-group="set" data-value="AION Adapter">
+                <span class="check"></span><span class="label">AION Adapter</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="AION Renewal">
+                <span class="check"></span><span class="label">AION Renewal</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Bushido">
+                <span class="check"></span><span class="label">Bushido</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Collective Psyche">
+                <span class="check"></span><span class="label">Collective Psyche</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Disaster Corps">
+                <span class="check"></span><span class="label">Disaster Corps</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Iron Beryllium">
+                <span class="check"></span><span class="label">Iron Beryllium</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Last Disciple">
+                <span class="check"></span><span class="label">Last Disciple</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Lustrous">
+                <span class="check"></span><span class="label">Lustrous</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Smoke Jumper">
+                <span class="check"></span><span class="label">Smoke Jumper</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Techsec">
+                <span class="check"></span><span class="label">Techsec</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Twofold Crown">
+                <span class="check"></span><span class="label">Twofold Crown</span>
+              </button>
+    
+              <button class="toggle-card" data-group="set" data-value="Wayward Psyche">
+                <span class="check"></span><span class="label">Wayward Psyche</span>
+              </button>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minimum Tier Wanted -->
+    <section class="section tier-section">
+      <div class="bar" id="tierBar">Minimum Tier Wanted</div>
+      <div class="tier-row mt-between" role="group" aria-label="Minimum Tier Wanted">
+        <button class="toggle-card tier-card" data-group="tier" data-value="1">
+          <span class="check"></span><span class="label">1</span>
+        </button>
+        <button class="toggle-card tier-card" data-group="tier" data-value="2">
+          <span class="check"></span><span class="label">2</span>
+        </button>
+        <button class="toggle-card tier-card" data-group="tier" data-value="3">
+          <span class="check"></span><span class="label">3</span>
+        </button>
+        <button class="toggle-card tier-card" data-group="tier" data-value="4">
+          <span class="check"></span><span class="label">4</span>
+        </button>
+        <button class="toggle-card tier-card" data-group="tier" data-value="5">
+          <span class="check"></span><span class="label">5</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Process button (centered) -->
+    <section class="section process-section center">
+      <button id="processBtn" class="process-btn state-off" aria-pressed="false" title="Process">
+        Process
+      </button>
+    </section>
+
+    <!-- Output Section -->
+    <section class="section output-section">
+      <div class="outputs">
+        <div class="output-row">
+          <div class="left-stack">
+            <button class="copy-btn" data-target="#outputTop">Copy</button>
+            <div class="output-label" id="outputTopLabel">Top Output</div>
+          </div>
+          <textarea id="outputTop" class="output" readonly>/* Top output goes here */</textarea>
+        </div>
+        <div class="output-row">
+          <div class="left-stack">
+            <button class="copy-btn" data-target="#outputBottom">Copy</button>
+            <div class="output-label" id="outputBottomLabel">Bottom Output</div>
+          </div>
+          <textarea id="outputBottom" class="output" readonly>/* Bottom output goes here */</textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <template id="toastTpl">
+    <div class="toast" role="status" aria-live="polite"></div>
+  </template>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
