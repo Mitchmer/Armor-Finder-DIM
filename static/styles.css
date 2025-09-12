@@ -125,7 +125,13 @@ body{
   color: var(--accent-on);
   box-shadow: 0 0 0 2px rgba(105,219,135,0.15) inset;
 }
-.toggle-card.on .check{ border-color: var(--accent-on); background: color-mix(in srgb, var(--accent-on) 20%, transparent); }
+
+.toggle-card.on .check{
+  border: none;
+  background-color: var(--accent-on); /* the green tint */
+  -webkit-mask: url("/static/icons/toggle-on.png") center/contain no-repeat;
+  mask: url("/static/icons/toggle-on.png") center/contain no-repeat;
+}
 
 /* Selections layout */
 .selections-grid{

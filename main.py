@@ -9,6 +9,10 @@ import io
 app = Flask(__name__)
 
 
+# TODO: Guard against not choosing a class
+# TODO: Guard against not choosing an archetype
+# TODO: remove file text in dropbox if the file is uploaded
+
 def process_csv(file_stream, params):
     # Replace this with your existing logic
     reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
