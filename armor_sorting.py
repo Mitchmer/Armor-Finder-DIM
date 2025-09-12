@@ -137,7 +137,7 @@ def sort_armor_into_sets(armor_items, params, is_finding_overall_max_buckets):
             #now that they're sorted into lists, i need to, for each set
             # sort them into archetypes
         for set in sorted_armor_dict.keys():
-            returned_buckets = sort_set_into_archetypes(sorted_armor_dict.get(set), params.archetypes, set, is_finding_overall_max_buckets)
+            returned_buckets = sort_set_into_archetypes(sorted_armor_dict.get(set), params.archetypes, set, is_finding_overall_max_buckets, params.classes if params.classes is not None else EQUIPPABLE_CLASSES)
             buckets.extend(returned_buckets)
     else:
         sorted_armor_list = []
@@ -146,12 +146,12 @@ def sort_armor_into_sets(armor_items, params, is_finding_overall_max_buckets):
             if (armor_item.archetype in params.archetypes) and (armor_item.tier >= params.minimum_tier):
                 sorted_armor_list.append(armor_item)
             #now that they're stored in a list, i need to sort them into archetypes
-        returned_buckets = sort_set_into_archetypes(sorted_armor_list, params.archetypes, "None", is_finding_overall_max_buckets)
+        returned_buckets = sort_set_into_archetypes(sorted_armor_list, params.archetypes, "None", is_finding_overall_max_buckets, params.classes if params.classes is not None else EQUIPPABLE_CLASSES)
         buckets.extend(returned_buckets) 
     return buckets
 
 
-def sort_set_into_archetypes(armor_items, wanted_archetypes, set, is_finding_overall_max_buckets):
+def sort_set_into_archetypes(armor_items, wanted_archetypes, set, is_finding_overall_max_buckets, equippable_classes):
     #we're just dealing with one set at a time
     # all of the armor pieces in the list are of the same set
     buckets = []
@@ -161,13 +161,13 @@ def sort_set_into_archetypes(armor_items, wanted_archetypes, set, is_finding_ove
     for armor in armor_items:
         sorted_armor_dict.get(armor.archetype).append(armor)
     for archetype in sorted_armor_dict.keys():
-        returned_buckets = sort_archetype_into_tertiary_buckets(sorted_armor_dict.get(archetype), set, archetype, is_finding_overall_max_buckets)
+        returned_buckets = sort_archetype_into_tertiary_buckets(sorted_armor_dict.get(archetype), set, archetype, is_finding_overall_max_buckets, equippable_classes)
         buckets.extend(returned_buckets)
     
     return buckets
 
 
-def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding_overall_max_buckets):
+def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding_overall_max_buckets, equippable_classes):
     # here, we are only dealing with a single archetype by now.
     # we just need to sort the remaining armor pieces into buckets where 
     # they share the same "tertiary" stat.
@@ -183,7 +183,7 @@ def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding
     # stat bucket
     buckets = []
     for stat in sorted_armor_dict.keys():
-        for equippable_class in EQUIPPABLE_CLASSES:
+        for equippable_class in equippable_classes:
             found_bucket = find_max_tertiary_stat_armor_ids_for_equippable_class(sorted_armor_dict.get(stat), set, archetype, stat, equippable_class, is_finding_overall_max_buckets)
             buckets.append(found_bucket)
     
