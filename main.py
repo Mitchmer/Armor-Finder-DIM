@@ -8,8 +8,6 @@ import io
 
 app = Flask(__name__)
 
-# TODO: Guard against not choosing an archetype
-# TODO: remove file text in dropbox if the file is uploaded
 # TODO: Copy text needs to be updated and moved to above buttons
 # TODO: keep background static when scrolling
 # TODO: archetypes and sets should be on a single rows when in mobile

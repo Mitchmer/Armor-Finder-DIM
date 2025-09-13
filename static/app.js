@@ -21,25 +21,92 @@ const qsa = (s, el = document) => Array.from(el.querySelectorAll(s));
 
 function showToast(msg, timeout = 2200){
   const tpl = qs('#toastTpl');
-  const node = tpl.content.firstElementChild.cloneNode(true);
-  node.textContent = msg;
-  document.body.appendChild(node);
-  setTimeout(() => node.remove(), timeout);
+  if (tpl && tpl.content && tpl.content.firstElementChild) {
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    node.textContent = msg;
+    document.body.appendChild(node);
+    setTimeout(() => node.remove(), timeout);
+  } else {
+    // minimal fallback
+    alert(msg);
+  }
 }
 
 function setProcessState(on){
   const btn = qs('#processBtn');
+  if (!btn) return;
   btn.classList.toggle('state-on', on);
   btn.classList.toggle('state-off', !on);
   btn.setAttribute('aria-pressed', String(on));
   isDirty = !on;
 }
 
+function getSelectionErrors(){
+  const errors = [];
+  if (!selections.class || selections.class.size === 0) errors.push("You must select at least one class");
+  if (!selections.archetype || selections.archetype.size === 0) errors.push("You must select at least one archetype");
+  if (!selections.set || selections.set.size === 0) errors.push("You must select at least one set");
+  return errors;
+}
+
+function applyProcessInvalidVisual(btn, blocked){
+  if(!btn) return;
+  let icon = btn.querySelector('.check');
+  let textSpan = btn.querySelector('.btn-text');
+  // Ensure children exist in a non-destructive way
+  if(!textSpan){
+    textSpan = document.createElement('span');
+    textSpan.className = 'btn-text';
+    textSpan.textContent = btn.textContent.trim() || 'Process';
+    btn.textContent = '';
+    btn.appendChild(textSpan);
+  }
+  if(!icon){
+    icon = document.createElement('span');
+    icon.className = 'check';
+    btn.insertBefore(icon, textSpan);
+  }
+  if(blocked){
+    btn.classList.add('invalid');
+    btn.disabled = true;
+    btn.setAttribute('aria-disabled', 'true');
+    // Force visuals inline so they can't be overridden
+    btn.style.borderColor = 'var(--error)';
+    btn.style.color = 'var(--error)';
+    btn.style.opacity = '1';
+    btn.style.filter = 'none';
+    btn.style.boxShadow = 'none';
+    icon.style.display = 'inline-block';
+    textSpan.textContent = "You must select at least one Class, Archetype, and Set";
+  } else {
+    btn.classList.remove('invalid');
+    btn.removeAttribute('aria-disabled');
+    // remove inline overrides
+    btn.style.removeProperty('border-color');
+    btn.style.removeProperty('color');
+    btn.style.removeProperty('opacity');
+    btn.style.removeProperty('filter');
+    btn.style.removeProperty('box-shadow');
+    icon.style.display = 'none';
+    textSpan.textContent = "Process";
+  }
+}
+
+function updateProcessEnabled(){
+  const btn = qs('#processBtn');
+  if(!btn) return;
+  const errs = getSelectionErrors();
+  const blocked = errs.length > 0;
+  btn.disabled = blocked;
+  btn.setAttribute('aria-disabled', String(blocked));
+  applyProcessInvalidVisual(btn, blocked);
+}
+
 /* File handling --------------------------------------------- */
 function validateFile(f){
   if(!f) return { ok:false, reason: "No file selected" };
   if(f.name !== REQUIRED_FILENAME){
-    return { ok:false, reason: `Invalid file. Must be "${REQUIRED_FILENAME}".` };
+    return { ok:false, reason: `Invalid filename. Must be "${REQUIRED_FILENAME}".` };
   }
   if(f.size > MAX_FILE_BYTES){
     return { ok:false, reason: `File too large (${Math.ceil(f.size/1024)}KB). Max is 500KB.` };
@@ -50,26 +117,40 @@ function validateFile(f){
 function attachFileHandlers(){
   const drop = qs('#fileDrop');
   const input = qs('#fileInput');
-  const status = qs('#fileStatus');
 
   function onFilePicked(f){
-    const { ok, reason } = validateFile(f);
-    if(!ok){
+    const verdict = validateFile(f);
+    if(!verdict.ok){
       file = null;
-      status.textContent = `❌ ${reason}`;
+      showToast(`❌ ${verdict.reason}`);
+      drop && drop.classList.remove('ok');
+      // restore original inside-box text
+      const t = window.originalFileBox || {};
+      if(qs('#fileBoxTitle')) qs('#fileBoxTitle').textContent = t.title || qs('#fileBoxTitle').textContent;
+      if(qs('#fileBoxSub'))   qs('#fileBoxSub').textContent   = t.sub   || qs('#fileBoxSub').textContent;
+      if(qs('#fileBoxNote'))  qs('#fileBoxNote').innerHTML    = t.note  || qs('#fileBoxNote').innerHTML;
       setProcessState(false);
+      updateProcessEnabled();
       return;
     }
     file = f;
-    status.textContent = `✅ Ready: ${file.name} (${Math.ceil(f.size/1024)}KB)`;
+    // Ready message inside the box
+    const kb = Math.ceil(file.size/1024);
+    if(qs('#fileBoxTitle')) qs('#fileBoxTitle').textContent = `Ready: ${file.name} (${kb}KB)`;
+    if(qs('#fileBoxSub'))   qs('#fileBoxSub').textContent   = '';
+    if(qs('#fileBoxNote'))  qs('#fileBoxNote').innerHTML    = '';
+    drop && drop.classList.add('ok');
     setProcessState(false); // mark dirty
+    updateProcessEnabled();
   }
 
   // Click-to-pick
-  input.addEventListener('change', (e) => {
+  input && input.addEventListener('change', (e) => {
     const f = e.target.files?.[0];
     if(f) onFilePicked(f);
   });
+
+  if(!drop) return;
 
   // Drag & Drop UX
   ;['dragenter','dragover'].forEach(evt => {
@@ -92,7 +173,7 @@ function attachFileHandlers(){
   drop.addEventListener('keydown', (e) => {
     if(e.key === 'Enter' || e.key === ' '){
       e.preventDefault();
-      input.click();
+      input && input.click();
     }
   });
 }
@@ -112,6 +193,7 @@ function attachSelectionHandlers(){
         selections[group].delete(value);
       }
       setProcessState(false);
+      updateProcessEnabled();
     });
   });
 
@@ -123,6 +205,7 @@ function attachSelectionHandlers(){
       btn.classList.add('on');
       selections.tier = btn.dataset.value;
       setProcessState(false);
+      updateProcessEnabled();
     });
   });
 }
@@ -137,10 +220,11 @@ function attachCopyHandlers(){
         await navigator.clipboard.writeText(el.value);
         showToast('Copied to clipboard');
       } catch(err){
-        // Fallback
-        el.select();
-        document.execCommand('copy');
-        showToast('Copied (fallback)');
+        if (el && el.select) {
+          el.select();
+          document.execCommand('copy');
+          showToast('Copied (fallback)');
+        }
       }
     });
   });
@@ -156,6 +240,11 @@ async function processNow(){
   }
   if(!selections.tier){
     showToast('Please select a minimum tier');
+    return;
+  }
+  const selErrs = getSelectionErrors();
+  if(selErrs.length){
+    selErrs.forEach(e => showToast(e));
     return;
   }
 
@@ -191,11 +280,19 @@ async function processNow(){
 }
 
 function attachProcessHandler(){
-  qs('#processBtn').addEventListener('click', processNow);
+  const btn = qs('#processBtn');
+  if (btn) btn.addEventListener('click', processNow);
 }
 
 /* Init ------------------------------------------------------ */
 function init(){
+  // Cache original dropbox text to preserve until a valid file is uploaded
+  window.originalFileBox = {
+    title: (qs('#fileBoxTitle')?.textContent || ""),
+    sub:   (qs('#fileBoxSub')?.textContent || ""),
+    note:  (qs('#fileBoxNote')?.innerHTML || "")
+  };
+
   attachFileHandlers();
   attachSelectionHandlers();
   attachCopyHandlers();
@@ -210,6 +307,7 @@ function init(){
   }
 
   setProcessState(false); // initial state: needs run
+  updateProcessEnabled(); // reflect invalid state on first load
 }
 
 document.addEventListener('DOMContentLoaded', init);
