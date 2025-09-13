@@ -8,22 +8,14 @@ import io
 
 app = Flask(__name__)
 
-# TODO: archetypes and sets should be on a single rows when in mobile
+# TODO: Remove ")" from empty output strings.
+# TODO: notify user when sorting didn't find anything.
 # TODO: New tab for usage instructions
 
-def process_csv(file_stream, params):
-    # Replace this with your existing logic
-    reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
-    #rows = list(reader)
-    # do your sorting/filtering here with sort_params
-    armor_items = []
-    #if os.path.exists(armsort.ARMOR_FILEPATH):
-    #    with open(armsort.ARMOR_FILEPATH, newline='') as csvfile:
-    #        reader = csv.DictReader(csvfile)
 
-    #        for dict in reader:
-    #            if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
-    #                armor_items.append(armsort.Armor(dict)) 
+def process_csv(file_stream, params):
+    reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
+    armor_items = []
 
     for dict in reader:
         if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
@@ -82,20 +74,12 @@ def process_file():
     print(params.minimum_tier)
     print(params.classes)
 
-    # your processing...
     set_output, overall_output = process_csv(file.read(), params)
     return jsonify({"resultTop": set_output, "resultBottom": overall_output})
 
 
-    #return jsonify({"result": output})
-
-
-#def main():
-#    process_file()
-    
-
 if __name__ == "__main__":
     app.run(debug=True)
-    #main()        
+     
 
 

@@ -688,3 +688,18 @@ body::before{
     pointer-events: auto !important;
   }
 }
+
+/* === Mobile layout tweak: make Archetype (grid-2) and Set (grid-4) one-per-row === */
+@media (max-width: 720px){
+  .grid-2,
+  .grid-4{
+    grid-template-columns: 1fr !important; /* each card spans full row */
+  }
+}
+
+/* === Mobile layout tweak (extended): include Set grid (.grid-3) as one-per-row === */
+@media (max-width: 720px){
+  .grid-3{
+    grid-template-columns: 1fr !important;
+  }
+}
