@@ -467,3 +467,132 @@ button#processBtn.process-btn.invalid .check::after{
   transform: rotate(-45deg);
   border-radius: 1px;
 }
+
+
+/* ===== Output section (clean alignment) ===== */
+.outputs{ display:flex; flex-direction: column; gap: 18px; }
+
+.output-row{
+  display: grid;
+  grid-template-columns: 220px 1fr;  /* left column width */
+  gap: 16px;
+  align-items: start;                /* top-align with the textarea */
+}
+
+.left-stack{
+  display: grid;
+  grid-template-rows: auto auto;     /* label on top, button below */
+  align-content: start;
+  align-items: start;
+  justify-items: start;              /* keep both left-aligned */
+  gap: 8px;
+  min-width: 0;                      /* allow label to wrap instead of pushing layout */
+}
+
+.output-label{
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.3;
+  white-space: normal;               /* wrap long labels nicely */
+  text-wrap: balance;                /* nicer breaks where supported */
+  max-width: 100%;
+}
+
+.copy-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  min-width: 112px;                  /* stops the “squished to the edge” look */
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* textarea keeps breathing room relative to the left stack */
+.output{
+  min-height: 140px;
+}
+
+/* Narrow screens: stack cleanly */
+@media (max-width: 980px){
+  .output-row{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .left-stack{
+    grid-template-rows: auto;        /* label and button side-by-side on one row */
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .output-label{ margin-right: 12px; }
+}
+
+
+/* ===== Output section: desktop refinement ===== */
+@media (min-width: 981px){
+  .outputs .output-row{
+    display: grid;
+    grid-template-columns: 260px 1fr;  /* wider, stable left column */
+    gap: 20px;
+    align-items: start;                /* top-align with textarea */
+  }
+  .outputs .left-stack{
+    display: grid;
+    grid-template-rows: auto auto;     /* label above button */
+    align-content: start;
+    align-items: start;
+    justify-items: start;
+    gap: 10px;
+    min-width: 0;
+  }
+  .outputs .output-label{
+    font-size: 1rem;
+    line-height: 1.35;
+    white-space: normal;
+    text-wrap: balance;
+  }
+  .outputs .copy-btn{
+    min-width: 124px;                  /* avoid squish on desktop */
+    padding: 9px 16px;
+  }
+  .outputs .output{
+    min-height: 160px;                 /* comfortable textarea height */
+  }
+}
+
+
+/* ===== Output section: desktop centered alignment ===== */
+@media (min-width: 981px){
+  .outputs .output-row{
+    display: grid;
+    grid-template-columns: 260px 1fr;   /* stable left column */
+    gap: 24px;
+    align-items: stretch;               /* make both columns equal height */
+  }
+  .outputs .left-stack{
+    display: grid;
+    grid-template-rows: auto auto;      /* label above button */
+    justify-items: center;              /* center horizontally within column */
+    align-content: center;              /* center vertically relative to the textarea height */
+    gap: 12px;
+    height: 100%;                       
+    min-width: 0;
+    text-align: center;
+  }
+  .outputs .output-label{
+    white-space: normal;
+    text-wrap: balance;
+    line-height: 1.35;
+    font-size: 1rem;
+    max-width: 240px;                   /* keep nice line lengths */
+  }
+  .outputs .copy-btn{
+    min-width: 128px;
+    padding: 10px 16px;
+  }
+  .outputs .output{
+    align-self: stretch;                 /* ensures the textarea spans the row height */
+    min-height: 180px;
+  }
+}
