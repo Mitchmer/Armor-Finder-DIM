@@ -10,6 +10,21 @@ ARMOR_ARCHETYPES = {
     "Specialist" : ["Class", "Weapons"]
 }
 
+ARMOR_SETS = {
+    "AION Adapter",
+    "AION Renewal",
+    "Bushido",
+    "Collective Psyche",
+    "Disaster Corps",
+    "Iron Beryllium",
+    "Last Disciple",
+    "Lustrous",
+    "Smoke Jumper",
+    "Techsec",
+    "Twofold Crown",
+    "Wayward Psyche"
+}
+
 STAT_LIST = [
     "Health",
     "Melee",
@@ -40,29 +55,17 @@ EQUIPPABLE_CLASSES = [
     "Warlock"
 ]
 
-WANTED_PARAMS = {
-    "classes" : [
 
-    ],
-    "sets" : [
-        "Techsec",
-        "Bushido",
-        "Smoke Jumper"
-    ],
-    "archetypes" : [
-        "Gunner",
-        "Paragon"
-    ],
-    "minimum_tier" : 3,
-}
+
+
 #TODO : check against no sets selected
 
 class SortingParameters:
     def __init__(self, dict):
         self.sets = dict.get("sets")
-        self.archetypes = dict.get("archetypes")
+        self.archetypes = dict.get("archetypes") if dict.get("archetypes") is not None else ARMOR_ARCHETYPES.keys()
         self.minimum_tier = dict.get("minimum_tier")
-        self.classes = dict.get("classes")
+        self.classes = dict.get("classes") if dict.get("classes") is not None else EQUIPPABLE_CLASSES
 
 
 class Armor:
@@ -132,21 +135,23 @@ def sort_armor_into_sets(armor_items, params, is_finding_overall_max_buckets):
             sorted_armor_dict.update({ set : []})
         for armor_item in armor_items:
             # check if the armor piece is in the set list AND archetype list
-            if (armor_item.set in params.sets) and (armor_item.archetype in params.archetypes) and (armor_item.tier >= params.minimum_tier):
+            if (armor_item.set in params.sets) and (armor_item.archetype in (params.archetypes if (params.archetypes is not None) and (len(params.archetypes) != 0) else list(ARMOR_ARCHETYPES.keys()))) and (armor_item.tier >= params.minimum_tier):
                 sorted_armor_dict.get(armor_item.set).append(armor_item)
             #now that they're sorted into lists, i need to, for each set
             # sort them into archetypes
+        #if params.classes is not None:
+        #    if (params.classes)
         for set in sorted_armor_dict.keys():
-            returned_buckets = sort_set_into_archetypes(sorted_armor_dict.get(set), params.archetypes, set, is_finding_overall_max_buckets, params.classes if params.classes is not None else EQUIPPABLE_CLASSES)
+            returned_buckets = sort_set_into_archetypes(sorted_armor_dict.get(set), params.archetypes if (params.archetypes is not None) and (len(params.archetypes) != 0) else list(ARMOR_ARCHETYPES.keys()), set, is_finding_overall_max_buckets, params.classes if (params.classes is not None) and (len(params.classes) != 0) else EQUIPPABLE_CLASSES)
             buckets.extend(returned_buckets)
     else:
         sorted_armor_list = []
         for armor_item in armor_items:
             # check if the armor piece is in the set list AND archetype list
-            if (armor_item.archetype in params.archetypes) and (armor_item.tier >= params.minimum_tier):
+            if (armor_item.archetype in (params.archetypes if (params.archetypes is not None) and (len(params.archetypes) != 0) else list(ARMOR_ARCHETYPES.keys()))) and (armor_item.tier >= params.minimum_tier):
                 sorted_armor_list.append(armor_item)
             #now that they're stored in a list, i need to sort them into archetypes
-        returned_buckets = sort_set_into_archetypes(sorted_armor_list, params.archetypes, "None", is_finding_overall_max_buckets, params.classes if params.classes is not None else EQUIPPABLE_CLASSES)
+        returned_buckets = sort_set_into_archetypes(sorted_armor_list, params.archetypes if (params.archetypes is not None) and (len(params.archetypes) != 0) else list(ARMOR_ARCHETYPES.keys()), "None", is_finding_overall_max_buckets, params.classes if (params.classes is not None) and (len(params.classes) != 0) else EQUIPPABLE_CLASSES)
         buckets.extend(returned_buckets) 
     return buckets
 
