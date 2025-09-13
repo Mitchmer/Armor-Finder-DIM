@@ -1,4 +1,5 @@
 :root{
+  --error: #ff6b6b;   /* light red for invalid state */
   --bg: #0b0f14;
   --panel: #121924;
   --text: #eaf2ff;
@@ -304,4 +305,61 @@ body{
 /* Add spacing between tier header and tier boxes */
 .tier-row.mt-between{
   margin-top: 10px;
+}
+
+
+/* Disabled state when requirements not met */
+.process-btn:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  filter: grayscale(15%);
+  box-shadow: none;
+}
+
+
+/* Process button content layout and invalid/error visuals */
+.process-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.process-btn.invalid{
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.process-btn.invalid .check{
+  width: 18px; height: 18px;
+  border-radius: 999px;
+  border: 2px solid var(--error);
+
+  border-color: var(--error);
+  position: relative;
+}
+/* Diagonal slash to form a "no" symbol */
+.process-btn.invalid .check::after{
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 2px; height: 120%;
+  background: var(--error);
+  transform: translate(-50%, -50%) rotate(-45deg);
+  border-radius: 2px;
+}
+
+/* When valid, revert icon to blue circle and text to default color via existing .process-btn styles */
+
+
+/* Show icon ONLY when invalid */
+.process-btn .check{
+  display: none;
+}
+.process-btn.invalid .check{
+  width: 18px; height: 18px;
+  border-radius: 999px;
+  border: 2px solid var(--error);
+
+  display: inline-block;
 }

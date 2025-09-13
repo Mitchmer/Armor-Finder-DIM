@@ -16,6 +16,37 @@ const selections = {
 };
 
 /* Helpers --------------------------------------------------- */
+function getSelectionErrors(){
+  const errors = [];
+  if (!selections.class || (selections.class.size !== undefined ? selections.class.size === 0 : !selections.class.length)) {
+    errors.push("You must select at least one class");
+  }
+  if (!selections.archetype || (selections.archetype.size !== undefined ? selections.archetype.size === 0 : !selections.archetype.length)) {
+    errors.push("You must select at least one archetype");
+  }
+  if (!selections.set || (selections.set.size !== undefined ? selections.set.size === 0 : !selections.set.length)) {
+    errors.push("You must select at least one set");
+  }
+  return errors;
+}
+function updateProcessEnabled(){
+  const btn = document.querySelector('#processBtn');
+  if(!btn) return;
+  const btnText = btn.querySelector('.btn-text');
+  const errs = getSelectionErrors();
+  const blocked = errs.length > 0;
+  btn.disabled = blocked;
+  btn.setAttribute('aria-disabled', String(blocked));
+
+  if(blocked){
+    btn.classList.add('invalid');
+    if(btnText){ btnText.textContent = "You must select at least one Class, Archetype, and Set"; }
+  } else {
+    btn.classList.remove('invalid');
+    if(btnText){ btnText.textContent = "Process"; }
+  }
+}
+
 const qs  = (s, el = document) => el.querySelector(s);
 const qsa = (s, el = document) => Array.from(el.querySelectorAll(s));
 
@@ -58,11 +89,13 @@ function attachFileHandlers(){
       file = null;
       status.textContent = `❌ ${reason}`;
       setProcessState(false);
+      updateProcessEnabled();
       return;
     }
     file = f;
     status.textContent = `✅ Ready: ${file.name} (${Math.ceil(f.size/1024)}KB)`;
-    setProcessState(false); // mark dirty
+    setProcessState(false);
+      updateProcessEnabled(); // mark dirty
   }
 
   // Click-to-pick
@@ -112,6 +145,7 @@ function attachSelectionHandlers(){
         selections[group].delete(value);
       }
       setProcessState(false);
+      updateProcessEnabled();
     });
   });
 
@@ -123,6 +157,7 @@ function attachSelectionHandlers(){
       btn.classList.add('on');
       selections.tier = btn.dataset.value;
       setProcessState(false);
+      updateProcessEnabled();
     });
   });
 }
@@ -209,7 +244,8 @@ function init(){
     selections.tier = DEFAULT_TIER;
   }
 
-  setProcessState(false); // initial state: needs run
+  setProcessState(false);
+      updateProcessEnabled(); // initial state: needs run
 }
 
 document.addEventListener('DOMContentLoaded', init);
