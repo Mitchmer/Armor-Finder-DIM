@@ -14,12 +14,18 @@
 }
 
 *{ box-sizing: border-box; }
-html, body { height: 100%; }
+html, body { height: 100%;   /* keep background static on scroll */
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+}
 body{
   margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
   color: var(--text);
   background: radial-gradient(1200px 800px at 20% -10%, #10243a 0%, #0b0f14 50%, #0b0f14 100%);
+  background: none;
 }
 
 .page-header{
@@ -596,3 +602,18 @@ button#processBtn.process-btn.invalid .check::after{
     min-height: 180px;
   }
 }
+
+
+/* Fixed background layer (isolated; does not affect layout) */
+body::before{
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(1200px 800px at 20% -10%, #10243a 0%, #0b0f14 50%, #0b0f14 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+}
+
