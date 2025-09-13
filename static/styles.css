@@ -467,3 +467,63 @@ button#processBtn.process-btn.invalid .check::after{
   transform: rotate(-45deg);
   border-radius: 1px;
 }
+
+
+/* ===== Output section (clean alignment) ===== */
+.outputs{ display:flex; flex-direction: column; gap: 18px; }
+
+.output-row{
+  display: grid;
+  grid-template-columns: 220px 1fr;  /* left column width */
+  gap: 16px;
+  align-items: start;                /* top-align with the textarea */
+}
+
+.left-stack{
+  display: grid;
+  grid-template-rows: auto auto;     /* label on top, button below */
+  align-content: start;
+  align-items: start;
+  justify-items: start;              /* keep both left-aligned */
+  gap: 8px;
+  min-width: 0;                      /* allow label to wrap instead of pushing layout */
+}
+
+.output-label{
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.3;
+  white-space: normal;               /* wrap long labels nicely */
+  text-wrap: balance;                /* nicer breaks where supported */
+  max-width: 100%;
+}
+
+.copy-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  min-width: 112px;                  /* stops the “squished to the edge” look */
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* textarea keeps breathing room relative to the left stack */
+.output{
+  min-height: 140px;
+}
+
+/* Narrow screens: stack cleanly */
+@media (max-width: 980px){
+  .output-row{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .left-stack{
+    grid-template-rows: auto;        /* label and button side-by-side on one row */
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .output-label{ margin-right: 12px; }
+}
