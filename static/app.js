@@ -28,7 +28,7 @@ function showToast(msg, timeout = 2200){
     setTimeout(() => node.remove(), timeout);
   } else {
     // minimal fallback
-    alert(msg);
+    console.warn('Toast:', msg);
   }
 }
 
@@ -69,7 +69,7 @@ function applyProcessInvalidVisual(btn, blocked){
   if(blocked){
     btn.classList.add('invalid');
     btn.disabled = true;
-    btn.setAttribute('aria-disabled', 'true');
+    btn.setAttribute('aria-disabled','true');
     // Force visuals inline so they can't be overridden
     btn.style.borderColor = 'var(--error)';
     btn.style.color = 'var(--error)';
@@ -146,27 +146,27 @@ function attachFileHandlers(){
 
   // Click-to-pick
   input && input.addEventListener('change', (e) => {
-    const f = e.target.files?.[0];
+    const f = e.target.files && e.target.files[0];
     if(f) onFilePicked(f);
   });
 
   if(!drop) return;
 
   // Drag & Drop UX
-  ;['dragenter','dragover'].forEach(evt => {
+  ['dragenter','dragover'].forEach(evt => {
     drop.addEventListener(evt, e => {
       e.preventDefault(); e.stopPropagation();
       drop.classList.add('dragover');
     });
   });
-  ;['dragleave','drop'].forEach(evt => {
+  ['dragleave','drop'].forEach(evt => {
     drop.addEventListener(evt, e => {
       e.preventDefault(); e.stopPropagation();
       drop.classList.remove('dragover');
     });
   });
   drop.addEventListener('drop', e => {
-    const f = e.dataTransfer.files?.[0];
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
     if(f) onFilePicked(f);
   });
   // Keyboard support
@@ -217,7 +217,7 @@ function attachCopyHandlers(){
       const targetSel = btn.getAttribute('data-target');
       const el = qs(targetSel);
       try{
-        await navigator.clipboard.writeText(el.value);
+        await navigator.clipboard.writeText(el.value || '');
         showToast('Copied to clipboard');
       } catch(err){
         if (el && el.select) {
@@ -284,6 +284,63 @@ function attachProcessHandler(){
   if (btn) btn.addEventListener('click', processNow);
 }
 
+/* Mobile-only accordion ------------------------------------- */
+function attachMobileAccordion(){
+  const mq = window.matchMedia('(max-width: 720px)');
+  const bars = ['#classBar', '#setBar', '#archetypeBar'];
+
+  function enableMobile(){
+    bars.forEach(sel => {
+      const bar = qs(sel);
+      if(!bar) return;
+      const col = bar.closest('.sel-col');
+      if(!col) return;
+
+      // Start collapsed by default on mobile
+      col.classList.add('collapsed');
+      bar.setAttribute('aria-expanded','false');
+      bar.setAttribute('role','button');
+      bar.setAttribute('tabindex','0');
+
+      if(bar.__accordionBound) return;
+      const toggle = () => {
+        const c = col.classList.toggle('collapsed');
+        bar.setAttribute('aria-expanded', String(!c));
+      };
+      bar.addEventListener('click', toggle);
+      bar.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault(); toggle();
+        }
+      });
+      bar.__accordionBound = true;
+    });
+  }
+
+  function disableDesktop(){
+    document.querySelectorAll('.sel-col').forEach(col => col.classList.remove('collapsed'));
+    bars.forEach(sel => {
+      const bar = qs(sel);
+      if(bar) bar.setAttribute('aria-expanded','true');
+    });
+  }
+
+  if(mq.matches) enableMobile(); else disableDesktop();
+
+  if (mq.addEventListener) {
+    mq.addEventListener('change', (e) => {
+      if(e.matches) enableMobile();
+      else disableDesktop();
+    });
+  } else {
+    // Fallback
+    window.addEventListener('resize', () => {
+      const isMobile = window.matchMedia('(max-width: 720px)').matches;
+      if(isMobile) enableMobile(); else disableDesktop();
+    });
+  }
+}
+
 /* Init ------------------------------------------------------ */
 function init(){
   // Cache original dropbox text to preserve until a valid file is uploaded
@@ -297,6 +354,7 @@ function init(){
   attachSelectionHandlers();
   attachCopyHandlers();
   attachProcessHandler();
+  attachMobileAccordion();
 
   // Preselect default tier (visual + state)
   const defaultBtn = document.querySelector(`.tier-card[data-value="${DEFAULT_TIER}"]`);

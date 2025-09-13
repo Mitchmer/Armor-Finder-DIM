@@ -617,3 +617,34 @@ body::before{
   background-position: center top;
 }
 
+
+
+/* === Mobile-only accordion for selection groups === */
+@media (max-width: 720px){
+  .user-selection .bar{
+    cursor: pointer;
+    position: relative;
+  }
+  .user-selection .bar::after{
+    content: "▾";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.18s ease;
+    opacity: 0.85;
+  }
+  .sel-col.collapsed .bar::after{
+    transform: translateY(-50%) rotate(-90deg);
+  }
+  .sel-col.collapsed .group{
+    display: none;
+  }
+}
+
+/* Desktop and larger: no accordion visuals; ensure content visible */
+@media (min-width: 721px){
+  .user-selection .bar{ cursor: default; }
+  .user-selection .bar::after{ content: none; }
+  .sel-col .group{ display: block; }
+}
