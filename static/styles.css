@@ -1,5 +1,5 @@
 :root{
-  --error: #ff6b6b;   /* light red for invalid state */
+  --error: #ff6b6b;
   --bg: #0b0f14;
   --panel: #121924;
   --text: #eaf2ff;
@@ -308,37 +308,58 @@ body{
 }
 
 
-/* Disabled state when requirements not met */
-.process-btn:disabled{
-  opacity: .55;
-  cursor: not-allowed;
-  filter: grayscale(15%);
-  box-shadow: none;
+/* Hide legacy status line under the dropbox */
+.file-status{ display: none !important; }
+
+/* Ready state: subtle green border glow */
+.file-drop.ok{
+  border-color: var(--accent-on);
+  box-shadow: 0 0 0 3px rgba(105,219,135,0.18);
 }
 
 
-/* Process button content layout and invalid/error visuals */
-.process-btn{
+/* Ready check icon inside the dropbox */
+.file-drop.ok .file-instructions{
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  text-align: left; /* the box stays centered overall; text aligns with the icon */
+}
+
+.file-drop.ok .file-instructions::before{
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  border-right: 3px solid var(--accent-on);
+  border-bottom: 3px solid var(--accent-on);
+  transform: rotate(45deg);
+  border-radius: 1px;
 }
 
 
-.process-btn.invalid{
-  border-color: var(--error);
-  color: var(--error);
+/* Show icon ONLY when invalid */
+.process-btn .check{ display:none; }
+.process-btn.invalid .check{ display:inline-block; }
+
+
+
+/* Invalid (requirements not met): force red style even when disabled */
+.process-btn.invalid,
+.process-btn.invalid:disabled{
+  border-color: var(--error) !important;
+  color: var(--error) !important;
+  box-shadow: none;
+  opacity: 1; /* keep readable, not dimmed like other disabled states */
 }
 
+/* Red "no" icon (circle + slash) only in invalid state */
 .process-btn.invalid .check{
   width: 18px; height: 18px;
   border-radius: 999px;
   border: 2px solid var(--error);
-
-  border-color: var(--error);
   position: relative;
 }
-/* Diagonal slash to form a "no" symbol */
 .process-btn.invalid .check::after{
   content: "";
   position: absolute;
@@ -349,17 +370,100 @@ body{
   border-radius: 2px;
 }
 
-/* When valid, revert icon to blue circle and text to default color via existing .process-btn styles */
 
 
-/* Show icon ONLY when invalid */
-.process-btn .check{
-  display: none;
+/* === Force invalid (red) visuals with high specificity === */
+button#processBtn.process-btn.invalid,
+button#processBtn.process-btn.invalid:disabled{
+  border-color: var(--error) !important;
+  color: var(--error) !important;
+  filter: none !important;
+  opacity: 1 !important;
+  box-shadow: none !important;
 }
-.process-btn.invalid .check{
-  width: 18px; height: 18px;
-  border-radius: 999px;
-  border: 2px solid var(--error);
 
+button#processBtn.process-btn.invalid .btn-text{
+  color: var(--error) !important;
+}
+
+/* Ensure the red "no" icon is visible only when invalid */
+button#processBtn.process-btn.invalid .check{ 
+  display: inline-block !important; 
+  width: 18px; height: 18px; 
+  border-radius: 999px; 
+  border: 2px solid var(--error); 
+  position: relative; 
+}
+button#processBtn.process-btn.invalid .check::after{
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 2px; height: 120%;
+  background: var(--error);
+  transform: translate(-50%, -50%) rotate(-45deg);
+  border-radius: 2px;
+}
+
+
+/* Mobile: allow the Process button message to wrap nicely */
+@media (max-width: 520px){
+  #processBtn.process-btn{
+    gap: 8px;
+    padding: 10px 12px;
+    align-items: flex-start;            /* lets multi-line text align naturally with icon */
+  }
+  #processBtn.process-btn .btn-text{
+    white-space: normal;                /* allow wrapping on small screens */
+    line-height: 1.2;
+    text-align: left;
+  }
+  #processBtn.process-btn.invalid .check{
+    margin-top: 2px;                    /* small visual nudge for vertical alignment */
+  }
+}
+
+
+/* === Process button: tidy spacing & alignment === */
+#processBtn.process-btn{
+  display: inline-flex;
+  align-items: center;          /* center icon vs text vertically */
+  justify-content: center;
+  gap: 10px;                    /* space between icon and text */
+  padding: 10px 16px;           /* comfortable target size */
+  line-height: 1.15;            /* avoid tall text boxes */
+  min-height: 40px;             /* stable height */
+  max-width: 100%;
+}
+
+#processBtn.process-btn .btn-text{
   display: inline-block;
+  line-height: 1.2;
+  text-align: center;           /* keeps message centered */
+  white-space: normal;          /* allow wrap if needed */
+  text-wrap: balance;           /* nicer wraps where supported */
+}
+
+/* Icon only visible when invalid */
+#processBtn.process-btn .check{ display:none; }
+
+#processBtn.process-btn.invalid .check{
+  display: inline-grid !important; /* grid centers the slash perfectly */
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border: 2px solid var(--error);
+  border-radius: 999px;
+  /* tiny optical nudge so the circle aligns with text x-height */
+  margin-top: 1px;
+}
+
+/* Slash inside the "no" icon */
+#processBtn.process-btn.invalid .check::after{
+  content: "";
+  width: 2px;
+  height: 12px;
+  background: var(--error);
+  transform: rotate(-45deg);
+  border-radius: 1px;
 }
