@@ -637,14 +637,54 @@ body::before{
   .sel-col.collapsed .bar::after{
     transform: translateY(-50%) rotate(-90deg);
   }
-  .sel-col.collapsed .group{
-    display: none;
+
+  /* Smooth accordion panel (the element right after .bar) */
+  .sel-col .bar + *{
+    overflow: hidden;
+    max-height: 9999px;
+    opacity: 1;
+    transition: max-height 220ms ease, opacity 180ms ease;
+    will-change: max-height, opacity;
+  }
+  .sel-col.collapsed .bar + *{
+    max-height: 0;
+    opacity: 0;
   }
 }
 
-/* Desktop and larger: no accordion visuals; ensure content visible */
+/* Respect reduced-motion users */
+@media (prefers-reduced-motion: reduce){
+  .sel-col .bar + *{
+    transition: none !important;
+  }
+}
 @media (min-width: 721px){
   .user-selection .bar{ cursor: default; }
   .user-selection .bar::after{ content: none; }
   .sel-col .group{ display: block; }
+}
+
+
+/* === Accordion animation: height-only (no opacity) === */
+@media (max-width: 720px){
+  .sel-col .bar + *{
+    overflow: hidden;
+    max-height: 9999px;
+    transition: max-height 200ms ease;
+    /* ensure clicks work when open */
+    pointer-events: auto;
+  }
+  .sel-col.collapsed .bar + *{
+    max-height: 0;
+    /* when collapsed, don't let hidden children intercept clicks */
+    pointer-events: none;
+  }
+}
+
+/* Desktop: ensure panels are fully open and interactive */
+@media (min-width: 721px){
+  .sel-col .bar + *{
+    max-height: none !important;
+    pointer-events: auto !important;
+  }
 }

@@ -284,63 +284,92 @@ function attachProcessHandler(){
   if (btn) btn.addEventListener('click', processNow);
 }
 
+
 /* Mobile-only accordion ------------------------------------- */
 function attachMobileAccordion(){
   const mq = window.matchMedia('(max-width: 720px)');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const bars = ['#classBar', '#setBar', '#archetypeBar'];
+
+  function panelOf(bar){ return bar ? bar.nextElementSibling : null; }
+
+  function setCollapsed(col, bar, collapsed){
+    if (!col || !bar) return;
+    col.classList.toggle('collapsed', collapsed);
+    bar.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+
+    const panel = panelOf(bar);
+    if (!panel) return;
+
+    if (reduceMotion.matches){
+      panel.style.maxHeight = collapsed ? '0px' : '9999px';
+      return;
+    }
+
+    const endCleanup = () => {
+      panel.removeEventListener('transitionend', endCleanup);
+      if (!col.classList.contains('collapsed')) {
+        panel.style.maxHeight = '9999px';
+      }
+    };
+
+    if (!collapsed){
+      const h = panel.scrollHeight;
+      // animate open from current height to measured height
+      requestAnimationFrame(() => {
+        panel.style.maxHeight = h + 'px';
+        panel.addEventListener('transitionend', endCleanup);
+      });
+    } else {
+      const h = panel.scrollHeight;
+      panel.style.maxHeight = h + 'px';
+      requestAnimationFrame(() => { panel.style.maxHeight = '0px'; });
+    }
+  }
 
   function enableMobile(){
     bars.forEach(sel => {
-      const bar = qs(sel);
-      if(!bar) return;
+      const bar = document.querySelector(sel);
+      if (!bar) return;
       const col = bar.closest('.sel-col');
-      if(!col) return;
+      if (!col) return;
 
-      // Start collapsed by default on mobile
-      col.classList.add('collapsed');
-      bar.setAttribute('aria-expanded','false');
+      // collapsed by default on mobile
+      setCollapsed(col, bar, true);
+
       bar.setAttribute('role','button');
       bar.setAttribute('tabindex','0');
 
-      if(bar.__accordionBound) return;
-      const toggle = () => {
-        const c = col.classList.toggle('collapsed');
-        bar.setAttribute('aria-expanded', String(!c));
+      if (bar.__accordionBound) return;
+      const toggle = (e) => {
+        // Prevent accidental text selections triggering clicks
+        e && e.preventDefault();
+        const isCollapsed = col.classList.contains('collapsed');
+        setCollapsed(col, bar, !isCollapsed);
       };
       bar.addEventListener('click', toggle);
       bar.addEventListener('keydown', (e) => {
-        if(e.key === 'Enter' || e.key === ' '){
-          e.preventDefault(); toggle();
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
       });
       bar.__accordionBound = true;
     });
   }
 
   function disableDesktop(){
-    document.querySelectorAll('.sel-col').forEach(col => col.classList.remove('collapsed'));
-    bars.forEach(sel => {
-      const bar = qs(sel);
-      if(bar) bar.setAttribute('aria-expanded','true');
+    document.querySelectorAll('.sel-col').forEach(col => {
+      col.classList.remove('collapsed');
+      const bar = col.querySelector('.bar');
+      const panel = panelOf(bar);
+      if (panel){ panel.style.maxHeight = ''; }
+      if (bar){ bar.setAttribute('aria-expanded','true'); }
     });
   }
 
-  if(mq.matches) enableMobile(); else disableDesktop();
-
-  if (mq.addEventListener) {
-    mq.addEventListener('change', (e) => {
-      if(e.matches) enableMobile();
-      else disableDesktop();
-    });
-  } else {
-    // Fallback
-    window.addEventListener('resize', () => {
-      const isMobile = window.matchMedia('(max-width: 720px)').matches;
-      if(isMobile) enableMobile(); else disableDesktop();
-    });
-  }
+  const onChange = () => { mq.matches ? enableMobile() : disableDesktop(); };
+  onChange();
+  if (mq.addEventListener) mq.addEventListener('change', onChange);
+  window.addEventListener('resize', onChange);
 }
-
 /* Init ------------------------------------------------------ */
 function init(){
   // Cache original dropbox text to preserve until a valid file is uploaded
