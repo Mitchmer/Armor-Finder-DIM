@@ -43,6 +43,15 @@ for archetype, stats in ARMOR_ARCHETYPES.items():
             temp_archetype_tertiaries.get(archetype).append(stat)
 ARMOR_ARCHETYPES_TERTIARY_STATS = temp_archetype_tertiaries
 
+ARMOR_STAT_HASHES = {
+    "Health" : 392767087,
+    "Melee" : 4244567218,
+    "Grenade" : 1735777505,
+    "Super" : 144602215,
+    "Class" : 1943323491,
+    "Weapons" : 2996146975
+}
+
 CLASS_ITEM_LIST = [
     "Titan Mark",
     "Hunter Cloak",
