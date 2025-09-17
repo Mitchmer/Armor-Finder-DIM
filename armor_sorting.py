@@ -223,30 +223,37 @@ def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, arch
     max_stat_chest = 0
     max_stat_legs = 0
     max_stat_class_item = 0
+    pre_max_value_armor_list = []
 
     for armor in armor_items:
-        # if helmet
-        if (armor.slot == "Helmet"):
-            if armor.stats.get("Total") > max_stat_helmet:
-                max_stat_helmet = armor.stats.get("Total")
-        # if gauntlets
-        elif (armor.slot == "Gauntlets"):
-            if armor.stats.get("Total") > max_stat_gauntlets:
-                max_stat_gauntlets = armor.stats.get("Total")
-        # if chest
-        elif (armor.slot == "Chest Armor"):
-            if armor.stats.get("Total") > max_stat_chest:
-                max_stat_chest = armor.stats.get("Total")
-        # if legs
-        elif (armor.slot == "Leg Armor"):
-            if armor.stats.get("Total") > max_stat_legs:
-                max_stat_legs = armor.stats.get("Total")
-        # if class item
-        elif armor.slot in CLASS_ITEM_LIST:
-            if armor.stats.get("Total") > max_stat_class_item:
-                max_stat_class_item = armor.stats.get("Total")
-        else:
-            print("Armor type not found")
+        if (armor.equippable_class == equippable_class):
+            # if helmet
+            if (armor.slot == "Helmet"):
+                if armor.stats.get("Total") > max_stat_helmet:
+                    max_stat_helmet = armor.stats.get("Total")
+                    pre_max_value_armor_list.append(armor)
+            # if gauntlets
+            elif (armor.slot == "Gauntlets"):
+                if armor.stats.get("Total") > max_stat_gauntlets:
+                    max_stat_gauntlets = armor.stats.get("Total")
+                    pre_max_value_armor_list.append(armor)
+            # if chest
+            elif (armor.slot == "Chest Armor"):
+                if armor.stats.get("Total") > max_stat_chest:
+                    max_stat_chest = armor.stats.get("Total")
+                    pre_max_value_armor_list.append(armor)
+            # if legs
+            elif (armor.slot == "Leg Armor"):
+                if armor.stats.get("Total") > max_stat_legs:
+                    max_stat_legs = armor.stats.get("Total")
+                    pre_max_value_armor_list.append(armor)
+            # if class item
+            elif armor.slot in CLASS_ITEM_LIST:
+                if armor.stats.get("Total") > max_stat_class_item:
+                    max_stat_class_item = armor.stats.get("Total")
+                    pre_max_value_armor_list.append(armor)
+            else:
+                print("Armor type not found")
 
     ########################################
     ## PASS 2: FIND ALL MAX VALUES
@@ -256,7 +263,7 @@ def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, arch
     max_chest_list = []
     max_legs_list = []
     max_class_item_list = []
-    for armor in armor_items:
+    for armor in pre_max_value_armor_list:
         if (armor.slot == "Helmet"):
             if (armor.stats.get("Total") == max_stat_helmet):
                 max_helmet_list.append(armor)
