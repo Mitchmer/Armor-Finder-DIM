@@ -81,6 +81,10 @@ body{
 
 /* Bars */
 .bar{
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y; /* allow vertical scroll without triggering taps */
+  cursor: pointer;
   background: var(--panel);
   border: var(--card-border) solid var(--accent-off);
   border-radius: var(--card-radius);
@@ -284,8 +288,17 @@ body{
   justify-content: center;
 }
 @media (max-width: 620px){
+  /* Mobile: 3 on first row, 2 centered on second */
   .tier-row{
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap);
+  }
+  /* Each card takes ~1/3 width minus gaps so we get 3 per line */
+  .tier-card{
+    flex: 0 1 calc((100% - 2 * var(--gap)) / 3);
+    max-width: calc((100% - 2 * var(--gap)) / 3);
   }
 }
 
@@ -701,5 +714,39 @@ body::before{
 @media (max-width: 720px){
   .grid-3{
     grid-template-columns: 1fr !important;
+  }
+}
+
+
+
+
+/* === MACC styles (opt-in, isolated) === */
+@media (max-width:768px){
+  [data-macc]{
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: rgba(0,0,0,0.12);
+  }
+  [data-macc-header]{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 0.75rem 1rem; font-weight:600; user-select:none; cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  [data-macc-content]{ overflow:hidden; max-height:0; transition:max-height 240ms ease; }
+  [data-macc][data-macc-open] [data-macc-content]{ max-height: 1200px; }
+}
+@media (min-width:769px){
+  [data-macc] { border: none; background: transparent; }
+  [data-macc-content]{ max-height: none !important; overflow: visible; }
+}
+/* === End MACC styles === */
+
+
+/* === Mobile visibility fix: MACC open state beats legacy .collapsed opacity === */
+@media (max-width: 768px){
+  [data-macc][data-macc-open] .bar + *,
+  [data-macc][data-macc-open] [data-macc-content]{
+    opacity: 1 !important;
   }
 }
