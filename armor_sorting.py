@@ -64,9 +64,6 @@ EQUIPPABLE_CLASSES = [
     "Warlock"
 ]
 
-
-
-
 #TODO : check against no sets selected
 
 class SortingParameters:
@@ -197,6 +194,9 @@ def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding
 
     # now we need to pull the ids of the highest stat pieces for each tertiary
     # stat bucket
+
+        # TODO: If tuning slot, we need one more step.
+
     buckets = []
     for stat in sorted_armor_dict.keys():
         for equippable_class in equippable_classes:
@@ -207,116 +207,177 @@ def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding
 
 
 def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, archetype, stat, equippable_class, is_finding_overall_max_buckets):
-    max_armor_list = []
-    max_stat_helmet = None
-    max_stat_gauntlets = None
-    max_stat_chest = None
-    max_stat_legs = None
-    max_stat_class_item = None
+
     # need to check if equal total, then check primary. if primary equal, then check secondary. if secondary equal, check tertiary.
     # if tertiary equal, then leave it alone
-    for armor_item in armor_items:
-        if (armor_item.equippable_class == equippable_class):
-            #print(armor_item.name)
-            if (armor_item.slot == "Helmet"):
-                # if the total is greater than
-                if max_stat_helmet == None or armor_item.stats.get("Total") > max_stat_helmet.stats.get("Total"):
-                    max_stat_helmet = armor_item
-                elif armor_item.stats.get("Total") == max_stat_helmet.stats.get("Total"):
-                    #we have a tie, we need to break it. check primary
-                    if armor_item.stats.get(armor_item.primary_stat) > max_stat_helmet.stats.get(max_stat_helmet.primary_stat):
-                        max_stat_helmet = armor_item
-                    elif armor_item.stats.get(armor_item.primary_stat) == max_stat_helmet.stats.get(max_stat_helmet.primary_stat):
-                        #we have a tie, we need to break it. check secondary
-                        if armor_item.stats.get(armor_item.secondary_stat) > max_stat_helmet.stats.get(max_stat_helmet.secondary_stat):
-                            max_stat_helmet = armor_item
-                        elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_helmet.stats.get(max_stat_helmet.secondary_stat):
-                            #we have a tie, we need to break it. check tertiary
-                            if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_helmet.stats.get(max_stat_helmet.tertiary_stat):
-                                max_stat_helmet = armor_item
-                #print("Found helmet")
-            elif (armor_item.slot == "Gauntlets"):
-                if max_stat_gauntlets == None or armor_item.stats.get("Total") > max_stat_gauntlets.stats.get("Total"):
-                    max_stat_gauntlets = armor_item
-                elif armor_item.stats.get("Total") == max_stat_gauntlets.stats.get("Total"):
-                    #we have a tie, we need to break it. check primary
-                    if armor_item.stats.get(armor_item.primary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.primary_stat):
-                        max_stat_gauntlets = armor_item
-                    elif armor_item.stats.get(armor_item.primary_stat) == max_stat_gauntlets.stats.get(max_stat_gauntlets.primary_stat):
-                        #we have a tie, we need to break it. check secondary
-                        if armor_item.stats.get(armor_item.secondary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.secondary_stat):
-                            max_stat_gauntlets = armor_item
-                        elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_gauntlets.stats.get(max_stat_gauntlets.secondary_stat):
-                            #we have a tie, we need to break it. check tertiary
-                            if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.tertiary_stat):
-                                max_stat_gauntlets = armor_item
-                #print("Found helmet")
-            elif (armor_item.slot == "Chest Armor"):
-                if max_stat_chest == None or armor_item.stats.get("Total") > max_stat_chest.stats.get("Total"):
-                    max_stat_chest = armor_item
-                elif armor_item.stats.get("Total") == max_stat_chest.stats.get("Total"):
-                    #we have a tie, we need to break it. check primary
-                    if armor_item.stats.get(armor_item.primary_stat) > max_stat_chest.stats.get(max_stat_chest.primary_stat):
-                        max_stat_chest = armor_item
-                    elif armor_item.stats.get(armor_item.primary_stat) == max_stat_chest.stats.get(max_stat_chest.primary_stat):
-                        #we have a tie, we need to break it. check secondary
-                        if armor_item.stats.get(armor_item.secondary_stat) > max_stat_chest.stats.get(max_stat_chest.secondary_stat):
-                            max_stat_chest = armor_item
-                        elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_chest.stats.get(max_stat_chest.secondary_stat):
-                            #we have a tie, we need to break it. check tertiary
-                            if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_chest.stats.get(max_stat_chest.tertiary_stat):
-                                max_stat_chest = armor_item
-                #print("Found chest armor")
-            elif (armor_item.slot == "Leg Armor"):
-                if max_stat_legs == None or armor_item.stats.get("Total") > max_stat_legs.stats.get("Total"):
-                    max_stat_legs = armor_item
-                elif armor_item.stats.get("Total") == max_stat_legs.stats.get("Total"):
-                    #we have a tie, we need to break it. check primary
-                    if armor_item.stats.get(armor_item.primary_stat) > max_stat_legs.stats.get(max_stat_legs.primary_stat):
-                        max_stat_legs = armor_item
-                    elif armor_item.stats.get(armor_item.primary_stat) == max_stat_legs.stats.get(max_stat_legs.primary_stat):
-                        #we have a tie, we need to break it. check secondary
-                        if armor_item.stats.get(armor_item.secondary_stat) > max_stat_legs.stats.get(max_stat_legs.secondary_stat):
-                            max_stat_legs = armor_item
-                        elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_legs.stats.get(max_stat_legs.secondary_stat):
-                            #we have a tie, we need to break it. check tertiary
-                            if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_legs.stats.get(max_stat_legs.tertiary_stat):
-                                max_stat_legs = armor_item
-                #print("Found leg armor")
-            elif armor_item.slot in CLASS_ITEM_LIST:
-                if max_stat_class_item == None or armor_item.stats.get("Total") > max_stat_class_item.stats.get("Total"):
-                    max_stat_class_item = armor_item
-                elif armor_item.stats.get("Total") == max_stat_class_item.stats.get("Total"):
-                    #we have a tie, we need to break it. check primary
-                    if armor_item.stats.get(armor_item.primary_stat) > max_stat_class_item.stats.get(max_stat_class_item.primary_stat):
-                        max_stat_class_item = armor_item
-                    elif armor_item.stats.get(armor_item.primary_stat) == max_stat_class_item.stats.get(max_stat_class_item.primary_stat):
-                        #we have a tie, we need to break it. check secondary
-                        if armor_item.stats.get(armor_item.secondary_stat) > max_stat_class_item.stats.get(max_stat_class_item.secondary_stat):
-                            max_stat_class_item = armor_item
-                        elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_class_item.stats.get(max_stat_class_item.secondary_stat):
-                            #we have a tie, we need to break it. check tertiary
-                            if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_class_item.stats.get(max_stat_class_item.tertiary_stat):
-                                max_stat_class_item = armor_item
-                #print("Found class item")
-            else:
-                print("Error: armor slot not found")
 
-    if max_stat_helmet is not None:
-        #print("or id:" + str(max_stat_helmet.id) + " ")
-        max_armor_list.append(max_stat_helmet)
-    if max_stat_gauntlets is not None:
-        #print(" or id:" + str(max_stat_gauntlets.id) + " ")
-        max_armor_list.append(max_stat_gauntlets)
-    if max_stat_chest is not None:
-        #print(" or id:" + str(max_stat_chest.id) + " ")
-        max_armor_list.append(max_stat_chest)
-    if max_stat_legs is not None:
-        #print(" or id:" + str(max_stat_legs.id) + " ")
-        max_armor_list.append(max_stat_legs)
-    if max_stat_class_item is not None:
-        #print(" or id:" + str(max_stat_class_item.id) + " ")
-        max_armor_list.append(max_stat_class_item)
+    ########################################
+    ## PASS 1 : FIND MAX VALUES
+    ########################################
+    # TODO: pass "found" armor pieces to new
+    #   list for later efficiency
+    #   Not super imperative for only a
+    #   couple hundred items at most.
+    max_stat_helmet = 0
+    max_stat_gauntlets = 0
+    max_stat_chest = 0
+    max_stat_legs = 0
+    max_stat_class_item = 0
+
+    for armor in armor_items:
+        # if helmet
+        if (armor.slot == "Helmet"):
+            if armor.stats.get("Total") > max_stat_helmet:
+                max_stat_helmet = armor.stats.get("Total")
+        # if gauntlets
+        elif (armor.slot == "Gauntlets"):
+            if armor.stats.get("Total") > max_stat_gauntlets:
+                max_stat_gauntlets = armor.stats.get("Total")
+        # if chest
+        elif (armor.slot == "Chest Armor"):
+            if armor.stats.get("Total") > max_stat_chest:
+                max_stat_chest = armor.stats.get("Total")
+        # if legs
+        elif (armor.slot == "Leg Armor"):
+            if armor.stats.get("Total") > max_stat_legs:
+                max_stat_legs = armor.stats.get("Total")
+        # if class item
+        elif armor.slot in CLASS_ITEM_LIST:
+            if armor.stats.get("Total") > max_stat_class_item:
+                max_stat_class_item = armor.stats.get("Total")
+        else:
+            print("Armor type not found")
+
+    ########################################
+    ## PASS 2: FIND ALL MAX VALUES
+    ########################################
+    max_helmet_list = []
+    max_gauntlets_list = []
+    max_chest_list = []
+    max_legs_list = []
+    max_class_item_list = []
+    for armor in armor_items:
+        if (armor.slot == "Helmet"):
+            if (armor.stats.get("Total") == max_stat_helmet):
+                max_helmet_list.append(armor)
+        elif (armor.slot == "Guantlets"):
+            if (armor.stats.get("Total") == max_stat_gauntlets):
+                max_gauntlets_list.append(armor)
+        elif (armor.slot == "Chest Armor"):
+            if (armor.stats.get("Total") == max_stat_chest):
+                max_chest_list.append(armor)
+        elif (armor.slot == "Leg Armor"):
+            if (armor.stats.get("Total") == max_stat_legs):
+                max_legs_list.append(armor)
+        elif (armor.slot in CLASS_ITEM_LIST):
+            if (armor.stats.get("Total") == max_stat_class_item):
+                max_class_item_list.append(armor)
+
+    # combine all lists together
+    max_armor_list = max_helmet_list + max_gauntlets_list + max_chest_list + max_legs_list + max_class_item_list
+
+    #for armor_item in armor_items:
+    #    if (armor_item.equippable_class == equippable_class):
+    #        #print(armor_item.name)
+    #        if (armor_item.slot == "Helmet"):
+    #            # if the total is greater than
+    #            if max_stat_helmet == None or armor_item.stats.get("Total") > max_stat_helmet.stats.get("Total"):
+    #                max_stat_helmet = armor_item
+    #            elif armor_item.stats.get("Total") == max_stat_helmet.stats.get("Total"):
+    #                #we have a tie, we need to break it. check primary
+    #                if armor_item.stats.get(armor_item.primary_stat) > max_stat_helmet.stats.get(max_stat_helmet.primary_stat):
+    #                    max_stat_helmet = armor_item
+    #                elif armor_item.stats.get(armor_item.primary_stat) == max_stat_helmet.stats.get(max_stat_helmet.primary_stat):
+    #                    #we have a tie, we need to break it. check secondary
+    #                    if armor_item.stats.get(armor_item.secondary_stat) > max_stat_helmet.stats.get(max_stat_helmet.secondary_stat):
+    #                        max_stat_helmet = armor_item
+    #                    elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_helmet.stats.get(max_stat_helmet.secondary_stat):
+    #                        #we have a tie, we need to break it. check tertiary
+    #                        if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_helmet.stats.get(max_stat_helmet.tertiary_stat):
+    #                            max_stat_helmet = armor_item
+    #            #print("Found helmet")
+    #        elif (armor_item.slot == "Gauntlets"):
+    #            if max_stat_gauntlets == None or armor_item.stats.get("Total") > max_stat_gauntlets.stats.get("Total"):
+    #                max_stat_gauntlets = armor_item
+    #            elif armor_item.stats.get("Total") == max_stat_gauntlets.stats.get("Total"):
+    #                #we have a tie, we need to break it. check primary
+    #                if armor_item.stats.get(armor_item.primary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.primary_stat):
+    #                    max_stat_gauntlets = armor_item
+    #                elif armor_item.stats.get(armor_item.primary_stat) == max_stat_gauntlets.stats.get(max_stat_gauntlets.primary_stat):
+    #                    #we have a tie, we need to break it. check secondary
+    #                    if armor_item.stats.get(armor_item.secondary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.secondary_stat):
+    #                        max_stat_gauntlets = armor_item
+    #                    elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_gauntlets.stats.get(max_stat_gauntlets.secondary_stat):
+    #                        #we have a tie, we need to break it. check tertiary
+    #                        if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_gauntlets.stats.get(max_stat_gauntlets.tertiary_stat):
+    #                            max_stat_gauntlets = armor_item
+    #            #print("Found helmet")
+    #        elif (armor_item.slot == "Chest Armor"):
+    #            if max_stat_chest == None or armor_item.stats.get("Total") > max_stat_chest.stats.get("Total"):
+    #                max_stat_chest = armor_item
+    #            elif armor_item.stats.get("Total") == max_stat_chest.stats.get("Total"):
+    #                #we have a tie, we need to break it. check primary
+    #                if armor_item.stats.get(armor_item.primary_stat) > max_stat_chest.stats.get(max_stat_chest.primary_stat):
+    #                    max_stat_chest = armor_item
+    #                elif armor_item.stats.get(armor_item.primary_stat) == max_stat_chest.stats.get(max_stat_chest.primary_stat):
+    #                    #we have a tie, we need to break it. check secondary
+    #                    if armor_item.stats.get(armor_item.secondary_stat) > max_stat_chest.stats.get(max_stat_chest.secondary_stat):
+    #                        max_stat_chest = armor_item
+    #                    elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_chest.stats.get(max_stat_chest.secondary_stat):
+    #                        #we have a tie, we need to break it. check tertiary
+    #                        if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_chest.stats.get(max_stat_chest.tertiary_stat):
+    #                            max_stat_chest = armor_item
+    #            #print("Found chest armor")
+    #        elif (armor_item.slot == "Leg Armor"):
+    #            if max_stat_legs == None or armor_item.stats.get("Total") > max_stat_legs.stats.get("Total"):
+    #                max_stat_legs = armor_item
+    #            elif armor_item.stats.get("Total") == max_stat_legs.stats.get("Total"):
+    #                #we have a tie, we need to break it. check primary
+    #                if armor_item.stats.get(armor_item.primary_stat) > max_stat_legs.stats.get(max_stat_legs.primary_stat):
+    #                    max_stat_legs = armor_item
+    #                elif armor_item.stats.get(armor_item.primary_stat) == max_stat_legs.stats.get(max_stat_legs.primary_stat):
+    #                    #we have a tie, we need to break it. check secondary
+    #                    if armor_item.stats.get(armor_item.secondary_stat) > max_stat_legs.stats.get(max_stat_legs.secondary_stat):
+    #                        max_stat_legs = armor_item
+    #                    elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_legs.stats.get(max_stat_legs.secondary_stat):
+    #                        #we have a tie, we need to break it. check tertiary
+    #                        if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_legs.stats.get(max_stat_legs.tertiary_stat):
+    #                            max_stat_legs = armor_item
+    #            #print("Found leg armor")
+    #        elif armor_item.slot in CLASS_ITEM_LIST:
+    #            if max_stat_class_item == None or armor_item.stats.get("Total") > max_stat_class_item.stats.get("Total"):
+    #                max_stat_class_item = armor_item
+    #            elif armor_item.stats.get("Total") == max_stat_class_item.stats.get("Total"):
+    #                #we have a tie, we need to break it. check primary
+    #                if armor_item.stats.get(armor_item.primary_stat) > max_stat_class_item.stats.get(max_stat_class_item.primary_stat):
+    #                    max_stat_class_item = armor_item
+    #                elif armor_item.stats.get(armor_item.primary_stat) == max_stat_class_item.stats.get(max_stat_class_item.primary_stat):
+    #                    #we have a tie, we need to break it. check secondary
+    #                    if armor_item.stats.get(armor_item.secondary_stat) > max_stat_class_item.stats.get(max_stat_class_item.secondary_stat):
+    #                        max_stat_class_item = armor_item
+    #                    elif armor_item.stats.get(armor_item.secondary_stat) == max_stat_class_item.stats.get(max_stat_class_item.secondary_stat):
+    #                        #we have a tie, we need to break it. check tertiary
+    #                        if armor_item.stats.get(armor_item.tertiary_stat) > max_stat_class_item.stats.get(max_stat_class_item.tertiary_stat):
+    #                            max_stat_class_item = armor_item
+    #            #print("Found class item")
+    #        else:
+    #            print("Error: armor slot not found")
+
+    #if max_stat_helmet is not None:
+    #    #print("or id:" + str(max_stat_helmet.id) + " ")
+    #    max_armor_list.append(max_stat_helmet)
+    #if max_stat_gauntlets is not None:
+    #    #print(" or id:" + str(max_stat_gauntlets.id) + " ")
+    #    max_armor_list.append(max_stat_gauntlets)
+    #if max_stat_chest is not None:
+    #    #print(" or id:" + str(max_stat_chest.id) + " ")
+    #    max_armor_list.append(max_stat_chest)
+    #if max_stat_legs is not None:
+    #    #print(" or id:" + str(max_stat_legs.id) + " ")
+    #    max_armor_list.append(max_stat_legs)
+    #if max_stat_class_item is not None:
+    #    #print(" or id:" + str(max_stat_class_item.id) + " ")
+    #    max_armor_list.append(max_stat_class_item)
    
     if len(max_armor_list) != 0:
         if is_finding_overall_max_buckets is False:
