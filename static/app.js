@@ -287,6 +287,13 @@ function attachProcessHandler(){
 
 /* Mobile-only accordion ------------------------------------- */
 function attachMobileAccordion(){
+  // Lightweight mobile scroll timestamp (prevents accidental toggles right after scroll)
+  if (typeof window.__lastScrollAt !== 'number') window.__lastScrollAt = 0;
+  window.addEventListener('scroll', ()=>{
+    if (window.matchMedia('(max-width: 720px)').matches) window.__lastScrollAt = Date.now();
+  }, {passive:true});
+
+
   const mq = window.matchMedia('(max-width: 720px)');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const bars = ['#classBar', '#setBar', '#archetypeBar'];
@@ -335,7 +342,7 @@ function attachMobileAccordion(){
       if (!col) return;
 
       // collapsed by default on mobile
-      setCollapsed(col, bar, true);
+      if (!bar.__accordionInitDone) { setCollapsed(col, bar, true); bar.__accordionInitDone = true; }
 
       bar.setAttribute('role','button');
       bar.setAttribute('tabindex','0');
@@ -347,8 +354,11 @@ function attachMobileAccordion(){
         const isCollapsed = col.classList.contains('collapsed');
         setCollapsed(col, bar, !isCollapsed);
       };
-      bar.addEventListener('click', toggle);
-      bar.addEventListener('keydown', (e) => {
+      
+      
+
+      bar.addEventListener('click', (e)=>{ const m=window.matchMedia('(max-width: 720px)'); if (m.matches && Date.now()-window.__lastScrollAt < 220) { return; } toggle(e); });
+bar.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); }
       });
       bar.__accordionBound = true;
