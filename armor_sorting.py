@@ -44,12 +44,12 @@ for archetype, stats in ARMOR_ARCHETYPES.items():
 ARMOR_ARCHETYPES_TERTIARY_STATS = temp_archetype_tertiaries
 
 ARMOR_STAT_HASHES = {
-    "Health" : 392767087,
-    "Melee" : 4244567218,
-    "Grenade" : 1735777505,
-    "Super" : 144602215,
-    "Class" : 1943323491,
-    "Weapons" : 2996146975
+    392767087 : "Health",
+    4244567218 : "Melee",
+    1735777505 : "Grenade",
+    144602215 : "Super",
+    1943323491 : "Class",
+    2996146975 : "Weapons"
 }
 
 CLASS_ITEM_LIST = [
@@ -100,30 +100,32 @@ class Armor:
         delimiter = " "
         self.set = delimiter.join(temp_set_list).strip()
 
-        self.primary_stat = ""
-        self.secondary_stat = ""
-        self.tertiary_stat = ""
-        self.archetype = ""
+        self.archetype = dict.get("Archetype")
+        self.primary_stat = ARMOR_ARCHETYPES.get(self.archetype)[0]
+        self.secondary_stat = ARMOR_ARCHETYPES.get(self.archetype)[1]
+        self.tertiary_stat = ARMOR_STAT_HASHES.get(int(dict.get("Tertiary Stat")))
+        
+        if (dict.get("Tuning Stat") is not None and (dict.get("Tuning Stat") != "") and (dict.get("Tuning Stat") != '')):
+            self.tuning_stat = ARMOR_STAT_HASHES.get(int(dict.get("Tuning Stat")))
+        #primary_value = 0
+        #secondary_value = 0
+        #tertiary_value = 0
+        #for key, value in self.stats.items():
+        #    if (key != "Total"):
+        #        if value > primary_value:
+        #            self.tertiary_stat, tertiary_value = self.secondary_stat, secondary_value
+        #            self.secondary_stat, secondary_value = self.primary_stat, primary_value
+        #            self.primary_stat, primary_value = key, value
+        #        elif value > secondary_value:
+        #            self.tertiary_stat, tertiary_value = self.secondary_stat, secondary_value
+        #            self.secondary_stat, secondary_value = key, value
+        #        elif value > tertiary_value:
+        #            self.tertiary_stat, tertiary_value = key, value
 
-        primary_value = 0
-        secondary_value = 0
-        tertiary_value = 0
-        for key, value in self.stats.items():
-            if (key != "Total"):
-                if value > primary_value:
-                    self.tertiary_stat, tertiary_value = self.secondary_stat, secondary_value
-                    self.secondary_stat, secondary_value = self.primary_stat, primary_value
-                    self.primary_stat, primary_value = key, value
-                elif value > secondary_value:
-                    self.tertiary_stat, tertiary_value = self.secondary_stat, secondary_value
-                    self.secondary_stat, secondary_value = key, value
-                elif value > tertiary_value:
-                    self.tertiary_stat, tertiary_value = key, value
-
-        archetype_pair = [self.primary_stat, self.secondary_stat]
-        for archetype, stats_pair in ARMOR_ARCHETYPES.items():
-            if archetype_pair == stats_pair:
-                self.archetype = archetype
+        #archetype_pair = [self.primary_stat, self.secondary_stat]
+        #for archetype, stats_pair in ARMOR_ARCHETYPES.items():
+        #    if archetype_pair == stats_pair:
+        #        self.archetype = archetype
 
 
 class Armor_Bucket:
