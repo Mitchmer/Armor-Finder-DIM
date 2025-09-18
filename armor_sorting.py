@@ -104,6 +104,9 @@ class Armor:
         
         if (dict.get("Tuning Stat") is not None and (dict.get("Tuning Stat") != "") and (dict.get("Tuning Stat") != '')):
             self.tuning_stat = ARMOR_STAT_HASHES.get(int(dict.get("Tuning Stat")))
+        else:
+            self.tuning_stat = None
+        
         #primary_value = 0
         #secondary_value = 0
         #tertiary_value = 0
@@ -126,12 +129,13 @@ class Armor:
 
 
 class Armor_Bucket:
-    def __init__(self, armor_list, set, archetype, tertiary_stat, equippable_class):
+    def __init__(self, armor_list, set, archetype, tertiary_stat, tuning_stat, equippable_class):
         self.set = set
         self.archetype = archetype
         self.tertiary_stat = tertiary_stat
         self.armor_list = armor_list
         self.equippable_class = equippable_class
+        self.tuning_stat = tuning_stat
 
 
 def sort_armor_into_sets(armor_items, params, is_finding_overall_max_buckets):
@@ -169,12 +173,15 @@ def sort_set_into_archetypes(armor_items, wanted_archetypes, set, is_finding_ove
     # all of the armor pieces in the list are of the same set
     buckets = []
     sorted_armor_dict = {}
+    # for each archetype, create a bucket to store the related armor pieces
     for archetype in wanted_archetypes:
         sorted_armor_dict.update({ archetype : []})
+    # for each armor piece, add it to the related archetype bucket
     for armor in armor_items:
         sorted_armor_dict.get(armor.archetype).append(armor)
-    for archetype in sorted_armor_dict.keys():
-        returned_buckets = sort_archetype_into_tertiary_buckets(sorted_armor_dict.get(archetype), set, archetype, is_finding_overall_max_buckets, equippable_classes)
+    # for each archetype bucket, pass its armor items to be sorted into tertiary buckets
+    for archetype, items in sorted_armor_dict.items():
+        returned_buckets = sort_archetype_into_tertiary_buckets(items, set, archetype, is_finding_overall_max_buckets, equippable_classes)
         buckets.extend(returned_buckets)
     
     return buckets
@@ -186,38 +193,84 @@ def sort_archetype_into_tertiary_buckets(armor_items, set, archetype, is_finding
     # they share the same "tertiary" stat.
     tertiary_stats = ARMOR_ARCHETYPES_TERTIARY_STATS.get(archetype)
 
+    buckets = []
+
     sorted_armor_dict = {}
+
+    # for each tertiary stat, create a bucket to hold its resepective armors
     for stat in tertiary_stats:
         sorted_armor_dict.update({ stat : [] })
+    # for each armor piece, put it in its related tertiary stat bucket
     for armor in armor_items:
         sorted_armor_dict.get(armor.tertiary_stat).append(armor)
 
     # now we need to pull the ids of the highest stat pieces for each tertiary
     # stat bucket
 
-        # TODO: If tuning slot, we need one more step.
+    # TODO: If tuning slot, we need one more step.
+    # if an armor is tier 5,
+    # we need 2 separate paths, both of which add to the same pool.
+    # if it's tier 5, we need to sort out the best armor pieces.
+    # if it's not, we can go straight to getting the best stats.
 
-    buckets = []
     for stat in sorted_armor_dict.keys():
-        for equippable_class in equippable_classes:
-            found_bucket = find_max_tertiary_stat_armor_ids_for_equippable_class(sorted_armor_dict.get(stat), set, archetype, stat, equippable_class, is_finding_overall_max_buckets)
-            buckets.append(found_bucket)
+        returned_buckets = sort_tertiary_stats_into_tuning_stat_buckets(sorted_armor_dict.get(stat), set, archetype, stat, equippable_classes, is_finding_overall_max_buckets)
+        buckets.extend(returned_buckets)
+
     
     return buckets
 
 
-def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, archetype, stat, equippable_class, is_finding_overall_max_buckets):
+def sort_tertiary_stats_into_tuning_stat_buckets(armor_items, set, archetype, tertiary_stat, equippable_classes, is_finding_overall_max_buckets):
+    tier_5_list = []
+    low_tier_list = []
+    buckets = []
+    
+    sorted_armor_dict = {}
+    for tuning_stat in STAT_LIST:
+        sorted_armor_dict.update({ tuning_stat : [] })
+    for armor in armor_items:
+        # if it's tier 5, but it in the tier 5 list
+        # otherwise, put it in the low_tier list
+        if armor.tuning_stat is not None:
+            tier_5_list.append(armor)
+        else:
+            low_tier_list.append(armor)
+    
+    for equippable_class in equippable_classes:
+        # for the tier 5 items, now we can sort through the best stats.
+        for armor in tier_5_list:
+            sorted_armor_dict.get(armor.tuning_stat).append(armor)
+            for tuning_stat in sorted_armor_dict.keys():
+                if (len(sorted_armor_dict.get(tuning_stat)) > 0):
+                    found_bucket = find_max_stat_armor_ids_for_equippable_class(sorted_armor_dict.get(tuning_stat), set, archetype, tertiary_stat, equippable_class, is_finding_overall_max_buckets, tuning_stat)
+                    buckets.append(found_bucket)
+        #for armor in low_tier_list:
+        found_bucket = find_max_stat_armor_ids_for_equippable_class(low_tier_list, set, archetype, tertiary_stat, equippable_class, is_finding_overall_max_buckets, None)
+        if found_bucket is not None:
+            buckets.append(found_bucket)
 
-    # need to check if equal total, then check primary. if primary equal, then check secondary. if secondary equal, check tertiary.
-    # if tertiary equal, then leave it alone
+    return buckets
+        # for the lower tiers, we need to separately sort so tier 5s do not get double-filtered.
+#        for armor in low_tier_list:
+#            found_bucket = find_max_stat_armor_ids_for_equippable_class()
+
+
+#if sorted_armor_dict.get(armor.tuning_stat) is not None:
+#    sorted_armor_dict.get(armor.tertiary_stat).append(armor)
+    
+#    buckets = []
+#    for stat in sorted_armor_dict.keys():
+#        found_bucket = find_max_stat_armor_ids_for_equippable_class(sorted_armor_dict.get(stat), set, archetype, stat, is_finding_overall_max_buckets, None)
+#        buckets.append(found_bucket)
+
+
+def find_max_stat_armor_ids_for_equippable_class(armor_items, set, archetype, stat, equippable_class, is_finding_overall_max_buckets, tuning_stat):
 
     ########################################
     ## PASS 1 : FIND MAX VALUES
     ########################################
-    # TODO: pass "found" armor pieces to new
-    #   list for later efficiency
-    #   Not super imperative for only a
-    #   couple hundred items at most.
+
     max_stat_helmet = 0
     max_stat_gauntlets = 0
     max_stat_chest = 0
@@ -267,7 +320,7 @@ def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, arch
         if (armor.slot == "Helmet"):
             if (armor.stats.get("Total") == max_stat_helmet):
                 max_helmet_list.append(armor)
-        elif (armor.slot == "Guantlets"):
+        elif (armor.slot == "Gauntlets"):
             if (armor.stats.get("Total") == max_stat_gauntlets):
                 max_gauntlets_list.append(armor)
         elif (armor.slot == "Chest Armor"):
@@ -388,6 +441,6 @@ def find_max_tertiary_stat_armor_ids_for_equippable_class(armor_items, set, arch
    
     if len(max_armor_list) != 0:
         if is_finding_overall_max_buckets is False:
-            return Armor_Bucket(max_armor_list, set, archetype, stat, equippable_class)
+            return Armor_Bucket(max_armor_list, set, archetype, stat, tuning_stat, equippable_class)
         else:
-            return Armor_Bucket(max_armor_list, "None", archetype, stat, equippable_class)
+            return Armor_Bucket(max_armor_list, "None", archetype, stat, tuning_stat, equippable_class)
