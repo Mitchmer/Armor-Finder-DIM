@@ -12,11 +12,7 @@ app = Flask(__name__)
 
 app.config["MAX_CONTENT_LENGTH"] = 600 * 1024 # 600kb hard cap
 
-# IGNORE THIS FOR NOW
-# TODO: Remove ")" from empty output strings.
-# TODO: notify user when sorting didn't find anything.
 # TODO: New tab for usage instructions
-# END IGNORE
 
 def process_csv(file_stream, params):
     reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
