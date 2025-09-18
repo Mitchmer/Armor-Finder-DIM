@@ -12,11 +12,7 @@ app = Flask(__name__)
 
 app.config["MAX_CONTENT_LENGTH"] = 600 * 1024 # 600kb hard cap
 
-# IGNORE THIS FOR NOW
-# TODO: Remove ")" from empty output strings.
-# TODO: notify user when sorting didn't find anything.
 # TODO: New tab for usage instructions
-# END IGNORE
 
 def process_csv(file_stream, params):
     reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
@@ -34,8 +30,11 @@ def process_csv(file_stream, params):
             for armor in bucket.armor_list:
                 set_output_string_ids = set_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
                 armor_count += 1
-    set_output_string_ids += ") \n"
-    
+    if armor_count != 0:
+        set_output_string_ids += ") \n"
+    else:
+        set_output_string_ids = "No armor found with selected filters"
+
     overall_output_string_ids = ""
     armor_count = 0
     for bucket in max_buckets:
@@ -43,7 +42,10 @@ def process_csv(file_stream, params):
             for armor in bucket.armor_list:
                 overall_output_string_ids = overall_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
                 armor_count += 1
-    overall_output_string_ids += ")\n"
+    if armor_count != 0:
+        overall_output_string_ids += ")\n"
+    else:
+        overall_output_string_ids += "No armor found with chosen archetype(s)"
 
     return set_output_string_ids, overall_output_string_ids
 
