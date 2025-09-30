@@ -1,4 +1,5 @@
 import armor_sorting as armsort
+import database_sorting as dbsort
 import csv
 import os
 import json
@@ -14,38 +15,39 @@ app.config["MAX_CONTENT_LENGTH"] = 600 * 1024 # 600kb hard cap
 
 # TODO: New tab for usage instructions
 
-def process_csv(file_stream, params):
-    reader = csv.DictReader(io.StringIO(file_stream.decode("utf-8")))
-    armor_items = []
+def process_csv(file, params):
+    # reader = csv.DictReader(io.StringIO(file.decode("utf-8")))
+    # armor_items = []
+    dbsort.read_inventory_from_file(file, params)
 
-    for dict in reader:
-        if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
-            armor_items.append(armsort.Armor(dict)) 
-    buckets = armsort.sort_armor_into_sets(armor_items, params, False)
-    max_buckets = armsort.sort_armor_into_sets(armor_items, params, True)
-    set_output_string_ids = ""
+    # for dict in reader:
+    #     if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
+    #         armor_items.append(armsort.Armor(dict)) 
+    # buckets = armsort.sort_armor_into_sets(armor_items, params, False)
+    # max_buckets = armsort.sort_armor_into_sets(armor_items, params, True)
+    # set_output_string_ids = ""
     armor_count = 0
-    for bucket in buckets:
-        if bucket is not None:
-            for armor in bucket.armor_list:
-                set_output_string_ids = set_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
-                armor_count += 1
+    # for bucket in buckets:
+    #     if bucket is not None:
+    #         for armor in bucket.armor_list:
+    #             set_output_string_ids = set_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
+    #             armor_count += 1
     if armor_count != 0:
         set_output_string_ids += ") \n"
     else:
         set_output_string_ids = "No armor found with selected filters"
 
     overall_output_string_ids = ""
-    armor_count = 0
-    for bucket in max_buckets:
-        if bucket is not None:
-            for armor in bucket.armor_list:
-                overall_output_string_ids = overall_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
-                armor_count += 1
-    if armor_count != 0:
-        overall_output_string_ids += ")\n"
-    else:
-        overall_output_string_ids += "No armor found with chosen archetype(s)"
+    # armor_count = 0
+    # for bucket in max_buckets:
+    #     if bucket is not None:
+    #         for armor in bucket.armor_list:
+    #             overall_output_string_ids = overall_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
+    #             armor_count += 1
+    # if armor_count != 0:
+    #     overall_output_string_ids += ")\n"
+    # else:
+    #     overall_output_string_ids += "No armor found with chosen archetype(s)"
 
     return set_output_string_ids, overall_output_string_ids
 
@@ -76,7 +78,7 @@ def process_file():
     print(params.minimum_tier)
     print(params.classes)
 
-    set_output, overall_output = process_csv(file.read(), params)
+    set_output, overall_output = process_csv(file, params)
     return jsonify({"resultTop": set_output, "resultBottom": overall_output})
 
 
