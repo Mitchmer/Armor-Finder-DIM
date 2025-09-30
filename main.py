@@ -18,8 +18,9 @@ app.config["MAX_CONTENT_LENGTH"] = 600 * 1024 # 600kb hard cap
 def process_csv(file, params):
     # reader = csv.DictReader(io.StringIO(file.decode("utf-8")))
     # armor_items = []
-    dbsort.read_inventory_from_file(file, params)
-
+    database = dbsort.read_inventory_from_file(file)
+    query = ""
+    query_string = dbsort.build_query(database, params, query, "intial")
     # for dict in reader:
     #     if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
     #         armor_items.append(armsort.Armor(dict)) 
@@ -73,10 +74,6 @@ def process_file():
             "classes" : classes
         }
     )
-    print(params.sets)
-    print(params.archetypes)
-    print(params.minimum_tier)
-    print(params.classes)
 
     set_output, overall_output = process_csv(file, params)
     return jsonify({"resultTop": set_output, "resultBottom": overall_output})
