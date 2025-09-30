@@ -1,6 +1,9 @@
 ARMOR_FILEPATH = "destiny-armor.csv"
 OUTPUT_FILEPATH = "destiny-finder-DIM-output.txt"
 
+#TODO: Create "duplicate" output
+
+
 ARMOR_ARCHETYPES = {
     "Brawler" : ["Melee", "Health"],
     "Bulwark" : ["Health", "Class"],
