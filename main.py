@@ -19,26 +19,25 @@ def process_csv(file, params):
     # reader = csv.DictReader(io.StringIO(file.decode("utf-8")))
     # armor_items = []
     database = dbsort.read_inventory_from_file(file)
-    query = ""
-    query_string = dbsort.build_query(database, params, query, "intial")
+    set_ids_output, overall_ids_output = dbsort.build_query(database, params)
     # for dict in reader:
     #     if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
     #         armor_items.append(armsort.Armor(dict)) 
     # buckets = armsort.sort_armor_into_sets(armor_items, params, False)
     # max_buckets = armsort.sort_armor_into_sets(armor_items, params, True)
     # set_output_string_ids = ""
-    armor_count = 0
+    #armor_count = 0
     # for bucket in buckets:
     #     if bucket is not None:
     #         for armor in bucket.armor_list:
     #             set_output_string_ids = set_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
     #             armor_count += 1
-    if armor_count != 0:
-        set_output_string_ids += ") \n"
-    else:
-        set_output_string_ids = "No armor found with selected filters"
+    #if armor_count != 0:
+    #    set_output_string_ids += ") \n"
+    #else:
+    #    set_output_string_ids = "No armor found with selected filters"
 
-    overall_output_string_ids = ""
+    #overall_output_string_ids = ""
     # armor_count = 0
     # for bucket in max_buckets:
     #     if bucket is not None:
@@ -50,7 +49,7 @@ def process_csv(file, params):
     # else:
     #     overall_output_string_ids += "No armor found with chosen archetype(s)"
 
-    return set_output_string_ids, overall_output_string_ids
+    return set_ids_output, overall_ids_output
 
 
 @app.route('/')

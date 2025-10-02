@@ -37,23 +37,25 @@ STAT_LIST = [
     "Weapons"
 ]
 
+ARMOR_STAT_HASHES = {
+    "Health" : 392767087,
+    "Melee" : 4244567218,
+    "Grenade" : 1735777505,
+    "Super" : 144602215,
+    "Class" : 1943323491,
+    "Weapons" : 2996146975
+}
+
 temp_archetype_tertiaries = {}
 temp_tertiary = []
 for archetype, stats in ARMOR_ARCHETYPES.items():
     temp_archetype_tertiaries.update({ archetype : [] })
-    for stat in STAT_LIST:
+    for stat, hash in ARMOR_STAT_HASHES.items():
         if stat not in stats:
-            temp_archetype_tertiaries.get(archetype).append(stat)
+            temp_archetype_tertiaries.get(archetype).append(hash)
 ARMOR_ARCHETYPES_TERTIARY_STATS = temp_archetype_tertiaries
 
-ARMOR_STAT_HASHES = {
-    392767087 : "Health",
-    4244567218 : "Melee",
-    1735777505 : "Grenade",
-    144602215 : "Super",
-    1943323491 : "Class",
-    2996146975 : "Weapons"
-}
+
 
 CLASS_ITEM_LIST = [
     "Titan Mark",
