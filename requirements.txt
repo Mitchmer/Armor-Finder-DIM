@@ -3,4 +3,3 @@ gunicorn
 dotenv
 pandas
 numpy
-re
