@@ -1,6 +1,6 @@
 import armor_sorting as armsort
-import database_sorting as dbsort
-import csv
+import pandas as pd
+import re
 import os
 import json
 from dotenv import load_dotenv
@@ -16,39 +16,19 @@ app.config["MAX_CONTENT_LENGTH"] = 600 * 1024 # 600kb hard cap
 # TODO: New tab for usage instructions
 
 def process_csv(file, params):
-    # reader = csv.DictReader(io.StringIO(file.decode("utf-8")))
-    # armor_items = []
-    database = dbsort.read_inventory_from_file(file)
-    set_ids_output, overall_ids_output = dbsort.build_query(database, params)
-    # for dict in reader:
-    #     if ((int(dict.get("Tier")) > 0) and (dict.get("Rarity") == "Legendary")):
-    #         armor_items.append(armsort.Armor(dict)) 
-    # buckets = armsort.sort_armor_into_sets(armor_items, params, False)
-    # max_buckets = armsort.sort_armor_into_sets(armor_items, params, True)
-    # set_output_string_ids = ""
-    #armor_count = 0
-    # for bucket in buckets:
-    #     if bucket is not None:
-    #         for armor in bucket.armor_list:
-    #             set_output_string_ids = set_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
-    #             armor_count += 1
-    #if armor_count != 0:
-    #    set_output_string_ids += ") \n"
-    #else:
-    #    set_output_string_ids = "No armor found with selected filters"
+    pattern = r"(" + "|".join(map(re.escape, params.sets)) + r")"
 
-    #overall_output_string_ids = ""
-    # armor_count = 0
-    # for bucket in max_buckets:
-    #     if bucket is not None:
-    #         for armor in bucket.armor_list:
-    #             overall_output_string_ids = overall_output_string_ids + f"{'or' if armor_count > 0 else '('} id:{armor.id} "
-    #             armor_count += 1
-    # if armor_count != 0:
-    #     overall_output_string_ids += ")\n"
-    # else:
-    #     overall_output_string_ids += "No armor found with chosen archetype(s)"
+    set_inventory = pd.read_csv(file, sep=',', header=0).get(['Name', 'Id', 'Type', 'Rarity', 'Tier', 'Equippable', 'Archetype', 'Tertiary Stat', 'Tuning Stat', 'Total (Base)'])
+    overall_inventory = set_inventory.copy()
+    groups = ['Type', 'Equippable', 'Archetype', 'Tertiary Stat', 'Tuning Stat']
+    overall_ids_output = armsort.get_max_ids(overall_inventory, groups, params)
 
+    groups.insert(0, 'Name')
+    names = set_inventory['Name'].str.extract(pattern, expand=False)
+    set_inventory.loc[:, 'Name'] = names
+    set_inventory = set_inventory[set_inventory['Name'].notna()]
+    set_ids_output = armsort.get_max_ids(set_inventory, groups, params)
+    
     return set_ids_output, overall_ids_output
 
 
