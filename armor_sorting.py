@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import re
 
 ARMOR_FILEPATH = "destiny-armor.csv"
 OUTPUT_FILEPATH = "destiny-finder-DIM-output.txt"
@@ -48,6 +49,10 @@ ARMOR_STAT_HASHES = {
     "Weapons" : 2996146975
 }
 
+EXCLUDED_NAMES = [
+    "Masquerader"
+]
+
 temp_archetype_tertiaries = {}
 temp_tertiary = []
 for archetype, stats in ARMOR_ARCHETYPES.items():
@@ -76,7 +81,16 @@ class SortingParameters:
         self.minimum_tier = dict.get("minimum_tier")
         self.classes = dict.get("classes") if dict.get("classes") is not None else EQUIPPABLE_CLASSES
 
+
+def exclude_names_from_inventory(names, inventory):
+    pattern = "|".join(map(re.escape, names))
+    mask = inventory['Name'].str.contains(pattern, case=False, na=False, regex=True)
+    return inventory[~mask]
+
+
 def get_max_ids(inventory, groups, params):
+    inventory = exclude_names_from_inventory(EXCLUDED_NAMES, inventory)
+
     inventory_archetypes = inventory['Archetype'].astype("string").to_numpy(dtype=str)
     mask = np.logical_or.reduce([np.char.find(inventory_archetypes, a) >= 0 for a in params.archetypes])
     inventory = inventory[mask]
