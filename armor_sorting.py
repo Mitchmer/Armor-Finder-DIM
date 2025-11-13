@@ -99,10 +99,28 @@ def get_max_ids(inventory, groups, params):
         (inventory['Tertiary Stat'].notna()) & (inventory['Rarity'] != 'Exotic') & (inventory['Tier'] >= params.minimum_tier)
     ]
 
-    max_total_groupby = tertiary_inventory.groupby(groups, dropna=False)
-    mask = max_total_groupby.obj['Total (Base)'].eq(max_total_groupby['Total (Base)'].transform('max'))
-    max_total_group = max_total_groupby.obj[mask]
-    ids_list = max_total_group.get('Id').to_numpy()
+    # create a separate inventory for tier >= 5
+    high_tier_inventory = tertiary_inventory[tertiary_inventory['Tier'] >= 5]
+    high_max_total_groupby = high_tier_inventory.groupby(groups, dropna=False)
+    high_mask = high_max_total_groupby.obj['Total (Base)'].eq(high_max_total_groupby['Total (Base)'].transform('max'))
+    high_max_total_group = high_max_total_groupby.obj[high_mask]
+    
+    # if the tier is <5 create a separate inventory for tiers less than 5
+    low_tier_inventory = pd.DataFrame()
+    if params.minimum_tier < 5:
+        low_tier_inventory = tertiary_inventory[tertiary_inventory['Tier'] < 5]
+        low_max_total_groupby = low_tier_inventory.groupby(groups, dropna=False)
+        low_mask = low_max_total_groupby.obj['Total (Base)'].eq(low_max_total_groupby['Total (Base)'].transform('max'))
+        low_max_total_group = low_max_total_groupby.obj[low_mask]
+    
+        compare_mask = high_max_total_group.get(groups[:-1]).drop_duplicates()
+        compare_mask['remove'] = 1
+        low_max_dupes = low_max_total_group.merge(compare_mask, on=groups[:-1], how='left')
+        low_max_dupes = low_max_dupes[low_max_dupes['remove'] != 1].drop(columns='remove')
+    
+        high_max_total_group = pd.concat([low_max_dupes, high_max_total_group], ignore_index=True)
+
+    ids_list = high_max_total_group.get('Id').to_numpy()
 
     ids_string = ""
     for id in ids_list:
