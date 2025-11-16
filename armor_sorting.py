@@ -88,6 +88,21 @@ def exclude_names_from_inventory(names, inventory):
     return inventory[~mask]
 
 
+def find_duplicates(inventory, groups):
+    # group by the selected columns (i.e. Archetype, Tertiary Stat, Tuning Stat) and count number of occurrences
+    grouped_inventory = inventory.groupby(groups, dropna=False).count()
+    # find all combinations with more than one instance
+    grouped_inventory = grouped_inventory[grouped_inventory.get('Total (Base)') > 1]
+    # create a masking column to filter the main inventory with
+    grouped_inventory = grouped_inventory.reset_index().get(groups).assign(Duplicate= True)
+    # merge the duplicates found mask with main inventory
+    inventory_with_dupes = inventory.merge(grouped_inventory, on=groups, how='left')
+    # filter all non-duplicates
+    dupes = inventory_with_dupes[inventory_with_dupes.get('Duplicate') == True]
+    # return the id's of all duplicates
+    return dupes.get('Id')
+
+
 def get_max_ids(inventory, groups, params):
     inventory = exclude_names_from_inventory(EXCLUDED_NAMES, inventory)
 
