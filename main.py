@@ -21,15 +21,15 @@ def process_csv(file, params):
     set_inventory = pd.read_csv(file, sep=',', header=0).get(['Name', 'Id', 'Type', 'Rarity', 'Tier', 'Equippable', 'Archetype', 'Tertiary Stat', 'Tuning Stat', 'Total (Base)'])
     overall_inventory = set_inventory.copy()
     groups = ['Type', 'Equippable', 'Archetype', 'Tertiary Stat', 'Tuning Stat']
-    overall_ids_output = armsort.get_max_ids(overall_inventory, groups, params)
+    overall_ids_output, overall_dupes_ids_output = armsort.get_max_ids(overall_inventory, groups, params)
 
     groups.insert(0, 'Name')
     names = set_inventory['Name'].str.extract(pattern, expand=False)
     set_inventory.loc[:, 'Name'] = names
     set_inventory = set_inventory[set_inventory['Name'].notna()]
-    set_ids_output = armsort.get_max_ids(set_inventory, groups, params)
+    set_ids_output, set_dupes_ids_output = armsort.get_max_ids(set_inventory, groups, params)
     
-    return set_ids_output, overall_ids_output
+    return set_ids_output, set_dupes_ids_output, overall_ids_output, overall_dupes_ids_output
 
 
 @app.route('/')
@@ -54,8 +54,8 @@ def process_file():
         }
     )
 
-    set_output, overall_output = process_csv(file, params)
-    return jsonify({"resultTop": set_output, "resultBottom": overall_output})
+    set_output, set_dupes_output, overall_output, overall_dupes_output = process_csv(file, params)
+    return jsonify({"resultTop": set_output, "resultTopDupes": set_dupes_output, "resultBottom": overall_output, "resultBottomDupes": overall_dupes_output})
 
 
 if __name__ == "__main__":
@@ -63,6 +63,3 @@ if __name__ == "__main__":
     debug = os.getenv("FLASK_DEBUG", "0") == "1" or os.getenv("DEBUG", "0") == "1"
     port = int(os.getenv("PORT", 8080))
     app.run(host="0.0.0.0", port=port, debug=debug, use_reloader=debug)
-     
-
-

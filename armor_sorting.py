@@ -130,16 +130,28 @@ def get_max_ids(inventory, groups, params):
     
         compare_mask = high_max_total_group.get(groups[:-1]).drop_duplicates()
         compare_mask['remove'] = 1
+        #display(compare_mask)
         low_max_dupes = low_max_total_group.merge(compare_mask, on=groups[:-1], how='left')
         low_max_dupes = low_max_dupes[low_max_dupes['remove'] != 1].drop(columns='remove')
     
         high_max_total_group = pd.concat([low_max_dupes, high_max_total_group], ignore_index=True)
 
-    ids_list = high_max_total_group.get('Id').to_numpy()
+    # make a copy of the max-stat inventory to query for duplicates
+    total_max_pieces = high_max_total_group.copy()
+
+    # grab all id's of max armor pieces
+    ids_list = total_max_pieces.get('Id').to_numpy()
+    
+    # get ids of all duplicates
+    dupe_ids_list = find_duplicates(high_max_total_group, groups)
 
     ids_string = ""
     for id in ids_list:
         ids_string += 'id:' + id + ' or '
+
+    dupe_ids_string = ""
+    for id in dupe_ids_list:
+        dupe_ids_string += 'id:' + id + ' or '
     
     slice_len = len(' or ')
-    return ids_string[:-slice_len]
+    return ids_string[:-slice_len], dupe_ids_string[:-slice_len]

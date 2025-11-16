@@ -264,10 +264,14 @@ async function processNow(){
     }
     const data = await res.json();
     const top = data.resultTop ?? data.result ?? "";
+    const topDupes = data.resultTopDupes ?? "";
     const bottom = data.resultBottom ?? "";
+    const bottomDupes = data.resultBottomDupes ?? "";
 
     qs('#outputTop').value = top;
+    qs('#outputTopDupes').value = topDupes;
     qs('#outputBottom').value = bottom;
+    qs('#outputBottomDupes').value = bottomDupes;
 
     setProcessState(true); // processed & up-to-date
     showToast('Processed successfully');
