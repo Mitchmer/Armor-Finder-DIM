@@ -14,64 +14,80 @@
 }
 
 *{ box-sizing: border-box; }
-html, body { height: 100%;   /* keep background static on scroll */
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
+html, body { 
+    height: 100%;   /* keep background static on scroll */
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center top;
 }
 body{
-  margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-  color: var(--text);
-  background: radial-gradient(1200px 800px at 20% -10%, #10243a 0%, #0b0f14 50%, #0b0f14 100%);
-  background: none;
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    color: var(--text);
+    background: radial-gradient(1200px 800px at 20% -10%, #10243a 0%, #0b0f14 50%, #0b0f14 100%);
+    background: none;
+}
+
+/* Fixed background layer (isolated; does not affect layout) */
+body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(1200px 800px at 20% -10%, #10243a 0%, #0b0f14 50%, #0b0f14 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center top;
 }
 
 .page-header{
-  padding: 24px 20px 12px;
-  text-align:center;
+    padding: 24px 20px 12px;
+    text-align:center;
 }
 .page-header h1{
-  margin:0;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  line-height: 1.1;
+    margin:0;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1.1;
 }
 
 .container{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 10px 20px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 10px 20px 60px;
 }
 
-.section{ margin-block: 18px; }
+.section{ 
+    margin-block: 18px; 
+}
 
 .file-drop{
-  position: relative;
-  border: var(--card-border) dashed var(--accent-off);
-  border-radius: var(--card-radius);
-  padding: 28px;
-  background: rgba(255,255,255,0.02);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition: border-color .2s ease, box-shadow .2s ease;
-  cursor: pointer;
-  outline: none;
+    position: relative;
+    border: var(--card-border) dashed var(--accent-off);
+    border-radius: var(--card-radius);
+    padding: 28px;
+    background: rgba(255,255,255,0.02);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: border-color .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+    outline: none;
 }
 .file-drop:focus-visible{
-  box-shadow: 0 0 0 3px rgba(109,182,255,0.4);
+    box-shadow: 0 0 0 3px rgba(109,182,255,0.4);
 }
 .file-drop.dragover{
-  border-color: var(--accent-on);
-  box-shadow: 0 0 0 3px rgba(105,219,135,0.25);
+    border-color: var(--accent-on);
+    box-shadow: 0 0 0 3px rgba(105,219,135,0.25);
 }
 .file-drop input[type="file"]{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  cursor: pointer;
+    position:absolute;
+    inset:0;
+    opacity:0;
+    cursor: pointer;
 }
 .file-instructions{ text-align:center; }
 .file-title{ margin: 0 0 4px; color: var(--muted); font-weight: 600; }
@@ -81,26 +97,26 @@ body{
 
 /* Bars */
 .bar{
-  -webkit-user-select: none;
-  user-select: none;
-  touch-action: pan-y; /* allow vertical scroll without triggering taps */
-  cursor: pointer;
-  background: var(--panel);
-  border: var(--card-border) solid var(--accent-off);
-  border-radius: var(--card-radius);
-  padding: 12px 14px;
-  text-align:center;
-  color: var(--muted);
-  font-weight: 600;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-y; /* allow vertical scroll without triggering taps */
+    cursor: pointer;
+    background: var(--panel);
+    border: var(--card-border) solid var(--accent-off);
+    border-radius: var(--card-radius);
+    padding: 12px 14px;
+    text-align:center;
+    color: var(--muted);
+    font-weight: 600;
 }
 
 /* User Selection */
 .section-title{
-  margin: 6px 0 10px;
-  letter-spacing: 0.18em;
-  font-size: 0.9rem;
-  color: var(--muted);
-  opacity: 0.9;
+    margin: 6px 0 10px;
+    letter-spacing: 0.18em;
+    font-size: 0.9rem;
+    color: var(--muted);
+    opacity: 0.9;
 }
 .group{ margin-block: 10px 16px; }
 .group-title{ margin: 0 0 10px; font-size: 1.05rem; color: var(--muted); }
@@ -111,23 +127,23 @@ body{
 .grid-3{ grid-template-columns: repeat(3, minmax(0,1fr)); }
 
 .toggle-card{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding: 14px 16px;
-  border-radius: var(--card-radius);
-  border: var(--card-border) solid var(--accent-off);
-  background: var(--panel);
-  color: var(--accent-off);
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-  transition: transform .1s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 14px 16px;
+    border-radius: var(--card-radius);
+    border: var(--card-border) solid var(--accent-off);
+    background: var(--panel);
+    color: var(--accent-off);
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: transform .1s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 .toggle-card .check{
-  width: 18px; height: 18px; border-radius: 999px;
-  border: 2px solid var(--accent-off);
-  display:inline-block;
+    width: 18px; height: 18px; border-radius: 999px;
+    border: 2px solid var(--accent-off);
+    display:inline-block;
 }
 .toggle-card:hover{ transform: translateY(-1px); }
 .toggle-card:active{ transform: translateY(0); }
@@ -174,37 +190,132 @@ body{
   box-shadow: 0 0 0 3px rgba(105,219,135,0.25);
 }
 
-/* Outputs */
-.outputs{ display:flex; flex-direction: column; gap: 14px; }
-.output-row{
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 12px;
-  align-items: center; /* aligns copy button to the output field's axis */
+.outputs{ 
+    display:flex; 
+    flex-direction: row; 
+    gap: 14px; 
 }
-.copy-btn{
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 2px solid var(--accent-off);
-  background: var(--panel);
-  color: var(--muted);
-  cursor: pointer;
-  font-weight: 600;
-  transition: border-color .15s ease, color .15s ease, transform .12s ease;
+
+.output{
+    min-height: 120px;
+    border-radius: 10px;
+    border: 2px solid #243449;
+    background: #0f1622;
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    font-size: 0.95rem;
+    resize: vertical;
+}
+
+.output-row{
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr 1fr;  /* left column width */
+    flex-direction: row;
+    gap: 16px;
+    align-items: start;                /* top-align with the textarea */
+}
+
+.output-row-sections{
+  
+}
+
+/* Left column stacks the Copy button above the label */
+.left-stack{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    grid-template-rows: auto auto;     /* label on top, button below */
+    align-content: start;
+    justify-items: center;              /* keep both left-aligned */
+    gap: 8px;
+    min-width: 0;                      /* allow label to wrap instead of pushing layout */
+}
+
+.output-label{
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.3;
+    white-space: normal;               /* wrap long labels nicely */
+    text-wrap: balance;                /* nicer breaks where supported */
+    max-width: 100%;
+}
+
+/* Narrow screens: stack cleanly */
+@media (max-width: 980px){
+    .output-row{
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .left-stack{
+        grid-template-rows: auto;        /* label and button side-by-side on one row */
+        grid-auto-flow: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .output-label{ 
+        margin-right: 12px; 
+    }
+}
+
+
+/* ===== Output section: desktop refinement ===== */
+@media (min-width: 981px){
+    .outputs .output-row{
+        display: grid;
+        grid-template-columns: 260px 1fr;   /* stable left column */
+        gap: 24px;
+        align-items: stretch;               /* make both columns equal height */
+    }
+
+    .outputs .left-stack{
+        display: grid;
+        grid-template-rows: auto auto;      /* label above button */
+        justify-items: center;              /* center horizontally within column */
+        align-items: start;
+        align-content: center;              /* center vertically relative to the textarea height */
+        gap: 10px;
+        height: 100%;                       
+        min-width: 0;
+        text-align: center;
+    }
+    
+    .outputs .output-label{
+        white-space: normal;
+        text-wrap: balance;
+        line-height: 1.35;
+        font-size: 1rem;
+        max-width: 240px;                   /* keep nice line lengths */
+    }
+
+    .outputs .copy-btn{
+        min-width: 124px;                  /* avoid squish on desktop */
+        padding: 9px 16px;
+    }
+
+    .outputs .output{
+        align-self: stretch;                 /* ensures the textarea spans the row height */
+        min-height: 180px;
+    }
+}
+
+.copy-btn{  
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    min-width: 112px;                  /* stops the “squished to the edge” look */
+    border-radius: 10px;
+    font-weight: 600;
+    border: 2px solid var(--accent-off);
+    background: var(--panel);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color .15s ease, color .15s ease, transform .12s ease;
 }
 .copy-btn:hover{ transform: translateY(-1px); }
 .copy-btn:active{ transform: translateY(0); }
-.output{
-  min-height: 120px;
-  border-radius: 10px;
-  border: 2px solid #243449;
-  background: #0f1622;
-  color: var(--text);
-  padding: 10px 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  font-size: 0.95rem;
-  resize: vertical;
-}
 
 /* Toast */
 .toast{
@@ -233,11 +344,7 @@ body{
   .selections-grid{
     grid-template-columns: 1fr;
   }
-  .output-row{
-    grid-template-columns: 1fr;
-  }
 }
-
 
 /* === Section width ratios per spec ===
    Desktop: Class:Archetype:Set ≈ 1:2:4
@@ -300,25 +407,6 @@ body{
     flex: 0 1 calc((100% - 2 * var(--gap)) / 3);
     max-width: calc((100% - 2 * var(--gap)) / 3);
   }
-}
-
-
-/* Left column stacks the Copy button above the label */
-.left-stack{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-}
-.output-label{
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.2;
-}
-
-/* Increase left column width slightly to fit label comfortably */
-.output-row{
-  grid-template-columns: 200px 1fr;
 }
 
 /* Add spacing between tier header and tier boxes */
@@ -487,136 +575,6 @@ button#processBtn.process-btn.invalid .check::after{
   border-radius: 1px;
 }
 
-
-/* ===== Output section (clean alignment) ===== */
-.outputs{ display:flex; flex-direction: column; gap: 18px; }
-
-.output-row{
-  display: grid;
-  grid-template-columns: 220px 1fr;  /* left column width */
-  gap: 16px;
-  align-items: start;                /* top-align with the textarea */
-}
-
-.left-stack{
-  display: grid;
-  grid-template-rows: auto auto;     /* label on top, button below */
-  align-content: start;
-  align-items: start;
-  justify-items: start;              /* keep both left-aligned */
-  gap: 8px;
-  min-width: 0;                      /* allow label to wrap instead of pushing layout */
-}
-
-.output-label{
-  color: var(--muted);
-  font-size: 0.95rem;
-  line-height: 1.3;
-  white-space: normal;               /* wrap long labels nicely */
-  text-wrap: balance;                /* nicer breaks where supported */
-  max-width: 100%;
-}
-
-.copy-btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
-  min-width: 112px;                  /* stops the “squished to the edge” look */
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-/* textarea keeps breathing room relative to the left stack */
-.output{
-  min-height: 140px;
-}
-
-/* Narrow screens: stack cleanly */
-@media (max-width: 980px){
-  .output-row{
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .left-stack{
-    grid-template-rows: auto;        /* label and button side-by-side on one row */
-    grid-auto-flow: column;
-    align-items: center;
-    gap: 12px;
-  }
-  .output-label{ margin-right: 12px; }
-}
-
-
-/* ===== Output section: desktop refinement ===== */
-@media (min-width: 981px){
-  .outputs .output-row{
-    display: grid;
-    grid-template-columns: 260px 1fr;  /* wider, stable left column */
-    gap: 20px;
-    align-items: start;                /* top-align with textarea */
-  }
-  .outputs .left-stack{
-    display: grid;
-    grid-template-rows: auto auto;     /* label above button */
-    align-content: start;
-    align-items: start;
-    justify-items: start;
-    gap: 10px;
-    min-width: 0;
-  }
-  .outputs .output-label{
-    font-size: 1rem;
-    line-height: 1.35;
-    white-space: normal;
-    text-wrap: balance;
-  }
-  .outputs .copy-btn{
-    min-width: 124px;                  /* avoid squish on desktop */
-    padding: 9px 16px;
-  }
-  .outputs .output{
-    min-height: 160px;                 /* comfortable textarea height */
-  }
-}
-
-
-/* ===== Output section: desktop centered alignment ===== */
-@media (min-width: 981px){
-  .outputs .output-row{
-    display: grid;
-    grid-template-columns: 260px 1fr;   /* stable left column */
-    gap: 24px;
-    align-items: stretch;               /* make both columns equal height */
-  }
-  .outputs .left-stack{
-    display: grid;
-    grid-template-rows: auto auto;      /* label above button */
-    justify-items: center;              /* center horizontally within column */
-    align-content: center;              /* center vertically relative to the textarea height */
-    gap: 12px;
-    height: 100%;                       
-    min-width: 0;
-    text-align: center;
-  }
-  .outputs .output-label{
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.35;
-    font-size: 1rem;
-    max-width: 240px;                   /* keep nice line lengths */
-  }
-  .outputs .copy-btn{
-    min-width: 128px;
-    padding: 10px 16px;
-  }
-  .outputs .output{
-    align-self: stretch;                 /* ensures the textarea spans the row height */
-    min-height: 180px;
-  }
-}
-
-
 /* Fixed background layer (isolated; does not affect layout) */
 body::before{
   content: "";
@@ -629,8 +587,6 @@ body::before{
   background-size: cover;
   background-position: center top;
 }
-
-
 
 /* === Mobile-only accordion for selection groups === */
 @media (max-width: 720px){

@@ -168,18 +168,36 @@
     <section class="section output-section">
       <div class="outputs">
         <div class="output-row">
-          <div class="left-stack">
-            <div class="output-label" id="outputTopLabel">Max Class + Set + Archetype Stat Combinations</div>
-            <button class="copy-btn" data-target="#outputTop">Copy IDs</button>
+          <div class="output-row-sections">
+            <div class="left-stack">
+              <div class="output-label" id="outputTopLabel">Max Set + Class + Archetype + Stat Combos</div>
+              <button class="copy-btn" data-target="#outputTop">Copy IDs</button>
+            </div>
+            <textarea id="outputTop" class="output" readonly>Armor IDs displayed here . . . </textarea>
           </div>
-          <textarea id="outputTop" class="output" readonly>Armor IDs displayed here . . . </textarea>
+          <div class="output-row-sections">
+            <div class="left-stack">
+              <div class="output-label" id="outputTopLabel">Duplicate Max Set + Class + Archetype + Stat Combos</div>
+              <button class="copy-btn" data-target="#outputTopDupes">Copy IDs</button>
+            </div>
+            <textarea id="outputTop" class="output" readonly>Armor IDs displayed here . . . </textarea>
+          </div>
         </div>
         <div class="output-row">
-          <div class="left-stack">
-            <div class="output-label" id="outputBottomLabel">Max Overall Archetype Stat Combinations</div>
-            <button class="copy-btn" data-target="#outputBottom">Copy IDs</button>
+          <div>
+            <div class="left-stack">
+              <div class="output-label" id="outputBottomLabel">Max Overall Combos</div>
+              <button class="copy-btn" data-target="#outputBottom">Copy IDs</button>
+            </div>
+            <textarea id="outputBottom" class="output" readonly>Armor IDs displayed here . . . </textarea>
           </div>
-          <textarea id="outputBottom" class="output" readonly>Armor IDs displayed here . . . </textarea>
+          <div>
+            <div class="left-stack">
+              <div class="output-label" id="outputBottomLabel">Duplicate Max Overall Combos</div>
+              <button class="copy-btn" data-target="#outputBottomDupes">Copy IDs</button>
+            </div>
+            <textarea id="outputBottom" class="output" readonly>Armor IDs displayed here . . . </textarea>
+          </div>
         </div>
       </div>
     </section>
