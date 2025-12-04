@@ -28,7 +28,13 @@ ARMOR_SETS = {
     "Smoke Jumper",
     "Techsec",
     "Twofold Crown",
-    "Wayward Psyche"
+    "Wayward Psyche",
+    "Sage Protector",
+    "Shrewd Survivor",
+    "Thriving Survivor",
+    "Ferropotent",
+    "Swordmaster",
+    "New Demotic"
 }
 
 STAT_LIST = [
